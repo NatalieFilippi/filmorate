@@ -70,10 +70,10 @@ public class UserController {
     }
 
     private long getIncrement() {
-        long increment = 1;
+        long increment = 0;
         if (!users.isEmpty()) {
             increment = users.keySet().stream().max(Long::compare).get();
         }
-        return increment;
+        return ++increment;
     }
 }

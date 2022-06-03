@@ -9,6 +9,8 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -121,7 +123,7 @@ public class UserTest {
                 .build();
 
         userController.create(user);
-        List<User> users = userController.findAll().stream().toList();
+        List<User> users = userController.findAll().stream().collect(Collectors.toList());
         assertEquals("nick", users.get(0).getName());
     }
 
@@ -138,7 +140,7 @@ public class UserTest {
         userController.create(user);
         user.setName("Lana");
         userController.put(user);
-        List<User> users = userController.findAll().stream().toList();
+        List<User> users = userController.findAll().stream().collect(Collectors.toList());
         assertEquals("Lana", users.get(0).getName());
     }
 
@@ -156,5 +158,36 @@ public class UserTest {
         user.setId(2);
         ValidationException ex = assertThrows(ValidationException.class, ()->userController.put(user));
         assertEquals(ex.getMessage(), "Пользователь не найден.");
+    }
+
+    @Test
+    void createUserID() throws ValidationException {
+        User user = User.builder()
+                .birthday(LocalDate.of(1980, Month.NOVEMBER,17))
+                .email("name@yandex.ru")
+                .login("nick")
+                .id(1)
+                .name("Lena")
+                .build();
+        userController.create(user);
+
+        User user1 = User.builder()
+                .birthday(LocalDate.of(1990, Month.NOVEMBER,17))
+                .email("name1@yandex.ru")
+                .login("nick")
+                .id(5)
+                .name("Lana")
+                .build();
+        userController.create(user1);
+
+        User user2 = User.builder()
+                .birthday(LocalDate.of(1970, Month.NOVEMBER,17))
+                .email("name2@yandex.ru")
+                .login("nick")
+                .name("Lina")
+                .build();
+        userController.create(user2);
+        List<User> users = userController.findAll().stream().collect(Collectors.toList());
+        assertEquals(6, users.get(2).getId());
     }
 }

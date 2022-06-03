@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -100,7 +101,7 @@ public class FilmTest {
                 .build();
 
         filmController.create(film);
-        List<Film> films = filmController.findAll().stream().toList();
+        List<Film> films = filmController.findAll().stream().collect(Collectors.toList());
         assertEquals(1, films.get(0).getId());
     }
 
