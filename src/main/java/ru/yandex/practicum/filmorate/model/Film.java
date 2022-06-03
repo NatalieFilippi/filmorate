@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.model;
 
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
+import java.time.Duration;
 import java.time.LocalDate;
 
 @Data

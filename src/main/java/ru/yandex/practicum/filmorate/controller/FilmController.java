@@ -16,7 +16,7 @@ import java.util.HashMap;
 public class FilmController {
     HashMap<Long, Film> films = new HashMap<>();
     private final static Logger log = LoggerFactory.getLogger(FilmController.class);
-
+    private final static LocalDate DATE_BORN_MOVIE = LocalDate.of(1895, Month.DECEMBER, 28);
     @GetMapping
     public Collection<Film> findAll() {
        return films.values();
@@ -59,7 +59,7 @@ public class FilmController {
         if (film.getDescription().length() > 200) {
             message = "Превышена максимальная длина описания — 200 символов";
         }
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, Month.DECEMBER, 28))) {
+        if (film.getReleaseDate().isBefore(DATE_BORN_MOVIE)) {
             message = "Дата релиза не может быть раньше даты 28.12.1895";
         }
         if (film.getDuration() <= 0) {
