@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controller.FilmController;
@@ -19,6 +20,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 public class FilmTest {
     private FilmController filmController = new FilmController();
+
+    @AfterEach
+    private void afterEach() {
+        filmController.deleteAll();
+    }
 
     @Test
     void createFilm() throws ValidationException {
@@ -101,8 +107,7 @@ public class FilmTest {
                 .build();
 
         filmController.create(film);
-        List<Film> films = filmController.findAll().stream().collect(Collectors.toList());
-        assertEquals(1, films.get(0).getId());
+        assertEquals(1, filmController.findAll().get(0).getId());
     }
 
     @Test
@@ -119,5 +124,12 @@ public class FilmTest {
         film.setId(2);
         ValidationException ex = assertThrows(ValidationException.class, ()->filmController.put(film));
         assertEquals(ex.getMessage(), "Фильм не найден.");
+    }
+
+    @Test
+    void createFilmNull() throws ValidationException {
+        ValidationException ex = assertThrows(ValidationException.class, ()->filmController.create(null));
+        assertEquals(ex.getMessage(), "Данные о фильме не заполнены.");
+        assertEquals(0, filmController.findAll().size());
     }
 }

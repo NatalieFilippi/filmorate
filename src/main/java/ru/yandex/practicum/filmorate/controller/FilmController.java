@@ -8,24 +8,29 @@ import ru.yandex.practicum.filmorate.model.Film;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    HashMap<Long, Film> films = new HashMap<>();
+    private long lastFilmId = 0;
+    private static HashMap<Long, Film> films = new HashMap<>();
     private final static Logger log = LoggerFactory.getLogger(FilmController.class);
     private final static LocalDate DATE_BORN_MOVIE = LocalDate.of(1895, Month.DECEMBER, 28);
+
     @GetMapping
-    public Collection<Film> findAll() {
-       return films.values();
+    public List<Film> findAll() {
+       return new ArrayList<>(films.values());
     }
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) throws ValidationException {
         String message = check(film);
         if (message.isBlank()) {
+            film.setId(getNextId());
             films.put(film.getId(), film);
         } else {
             log.debug(message);
@@ -53,29 +58,27 @@ public class FilmController {
 
     private String check(Film film) throws ValidationException {
         String message = "";
-        if (film.getName() == null || film.getName().isBlank()) {
+        if (film == null) {
+            message = "Данные о фильме не заполнены.";
+        } else if (film.getName() == null || film.getName().isBlank()) {
             message = "Название фильма не может быть пустым.";
-        }
-        if (film.getDescription().length() > 200) {
+        } else if (film.getDescription().length() > 200) {
             message = "Превышена максимальная длина описания — 200 символов";
-        }
-        if (film.getReleaseDate().isBefore(DATE_BORN_MOVIE)) {
+        } else if (film.getReleaseDate().isBefore(DATE_BORN_MOVIE)) {
             message = "Дата релиза не может быть раньше даты 28.12.1895";
-        }
-        if (film.getDuration() <= 0) {
+        } else if (film.getDuration() <= 0) {
             message = "Продолжительность фильма должна быть больше 0";
-        }
-        if (film.getId() == 0) {
-            film.setId(getIncrement());
         }
         return message;
     }
 
-    private long getIncrement() {
-        long increment = 1;
-        if (!films.isEmpty()) {
-            increment = films.keySet().stream().max(Long::compare).get();
-        }
-        return increment;
+    private long getNextId() {
+        return ++lastFilmId;
     }
+
+    //метод для тестов
+    public void deleteAll() {
+        films.clear();
+    }
+
 }

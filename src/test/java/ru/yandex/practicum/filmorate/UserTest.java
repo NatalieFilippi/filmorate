@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controller.FilmController;
@@ -18,13 +19,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class UserTest {
     private UserController userController = new UserController();
 
+    @AfterEach
+    private void afterEach() {
+        userController.deleteAll();
+    }
     @Test
     void createUser() throws ValidationException {
         User user = User.builder()
                 .birthday(LocalDate.of(1980, Month.NOVEMBER,17))
                 .email("name@yandex.ru")
                 .login("nick")
-                .id(1)
                 .name("Lena")
                 .build();
 
@@ -37,7 +41,6 @@ public class UserTest {
         User user = User.builder()
                 .birthday(LocalDate.of(1980, Month.NOVEMBER,17))
                 .email("name@yandex.ru")
-                .id(1)
                 .name("Lena")
                 .build();
 
@@ -51,7 +54,6 @@ public class UserTest {
                 .birthday(LocalDate.of(1980, Month.NOVEMBER,17))
                 .email("name@yandex.ru")
                 .login("nick 1")
-                .id(1)
                 .name("Lena")
                 .build();
 
@@ -69,7 +71,7 @@ public class UserTest {
                 .build();
 
         userController.create(user);
-        assertEquals(1, userController.findAll().stream().findFirst().get().getId());
+        assertEquals(1, userController.findAll().get(0).getId());
     }
 
     @Test
@@ -77,7 +79,6 @@ public class UserTest {
         User user = User.builder()
                 .birthday(LocalDate.of(1980, Month.NOVEMBER,17))
                 .login("nick")
-                .id(1)
                 .name("Lena")
                 .build();
 
@@ -90,7 +91,6 @@ public class UserTest {
         User user = User.builder()
                 .birthday(LocalDate.of(1980, Month.NOVEMBER,17))
                 .login("nick")
-                .id(1)
                 .email("nameyandex.ru")
                 .name("Lena")
                 .build();
@@ -104,7 +104,6 @@ public class UserTest {
         User user = User.builder()
                 .birthday(LocalDate.of(2500, Month.NOVEMBER,17))
                 .login("nick")
-                .id(1)
                 .email("name@yandex.ru")
                 .name("Lena")
                 .build();
@@ -119,12 +118,10 @@ public class UserTest {
                 .birthday(LocalDate.of(1980, Month.NOVEMBER,17))
                 .email("name@yandex.ru")
                 .login("nick")
-                .id(1)
                 .build();
 
         userController.create(user);
-        List<User> users = userController.findAll().stream().collect(Collectors.toList());
-        assertEquals("nick", users.get(0).getName());
+        assertEquals("nick", userController.findAll().get(0).getName());
     }
 
     @Test
@@ -133,15 +130,13 @@ public class UserTest {
                 .birthday(LocalDate.of(1980, Month.NOVEMBER,17))
                 .email("name@yandex.ru")
                 .login("nick")
-                .id(1)
                 .name("Lena")
                 .build();
 
         userController.create(user);
         user.setName("Lana");
         userController.put(user);
-        List<User> users = userController.findAll().stream().collect(Collectors.toList());
-        assertEquals("Lana", users.get(0).getName());
+        assertEquals("Lana", userController.findAll().get(0).getName());
     }
 
     @Test
@@ -150,7 +145,6 @@ public class UserTest {
                 .birthday(LocalDate.of(1980, Month.NOVEMBER,17))
                 .email("name@yandex.ru")
                 .login("nick")
-                .id(1)
                 .name("Lena")
                 .build();
 
@@ -166,7 +160,6 @@ public class UserTest {
                 .birthday(LocalDate.of(1980, Month.NOVEMBER,17))
                 .email("name@yandex.ru")
                 .login("nick")
-                .id(1)
                 .name("Lena")
                 .build();
         userController.create(user);
@@ -175,7 +168,6 @@ public class UserTest {
                 .birthday(LocalDate.of(1990, Month.NOVEMBER,17))
                 .email("name1@yandex.ru")
                 .login("nick")
-                .id(5)
                 .name("Lana")
                 .build();
         userController.create(user1);
@@ -187,7 +179,13 @@ public class UserTest {
                 .name("Lina")
                 .build();
         userController.create(user2);
-        List<User> users = userController.findAll().stream().collect(Collectors.toList());
-        assertEquals(6, users.get(2).getId());
+        assertEquals(3, userController.findAll().get(2).getId());
+    }
+
+    @Test
+    void createUserNull() throws ValidationException {
+        ValidationException ex = assertThrows(ValidationException.class, ()->userController.create(null));
+        assertEquals(ex.getMessage(), "Данные о пользователе не заполнены.");
+        assertEquals(0, userController.findAll().size());
     }
 }
