@@ -1,13 +1,19 @@
 package ru.yandex.practicum.filmorate;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.controller.UserController;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -19,13 +25,30 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 public class FilmTest {
-    private FilmController filmController = new FilmController();
+    //private InMemoryFilmStorage inMemoryFilmStorage = new InMemoryFilmStorage();
+    private FilmController filmController = new FilmController(
+            new InMemoryFilmStorage(),
+            new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
+
+    private UserController userController = new UserController(
+            new InMemoryUserStorage(),
+            new UserService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
 
     @AfterEach
     private void afterEach() {
         filmController.deleteAll();
     }
 
+    /*@BeforeAll
+    private static void beforeAll() throws ValidationException {
+        User user = User.builder()
+                .birthday(LocalDate.of(1980, Month.NOVEMBER,17))
+                .email("name@yandex.ru")
+                .login("nick")
+                .name("Lena")
+                .build();
+        userController.create(user);
+    }*/
     @Test
     void createFilm() throws ValidationException {
         Film film = Film.builder()
@@ -88,7 +111,7 @@ public class FilmTest {
         Film film = Film.builder()
                 .id(1)
                 .description("Фильп про Лену")
-                .duration(-4)
+                .duration(40)
                 .name("Lena")
                 .releaseDate(LocalDate.of(2022,Month.MARCH,25))
                 .build();
@@ -131,5 +154,28 @@ public class FilmTest {
         ValidationException ex = assertThrows(ValidationException.class, ()->filmController.create(null));
         assertEquals(ex.getMessage(), "Данные о фильме не заполнены.");
         assertEquals(0, filmController.findAll().size());
+    }
+
+    @Test
+    void addLike() throws ValidationException, ObjectNotFoundException {
+        Film film = Film.builder()
+                .id(1)
+                .name("Lena")
+                .description("Фильп про Лену")
+                .duration(200)
+                .releaseDate(LocalDate.of(2022,Month.MARCH,25))
+                .build();
+
+        filmController.create(film);
+
+        User user = User.builder()
+                .birthday(LocalDate.of(1980, Month.NOVEMBER,17))
+                .email("name@yandex.ru")
+                .login("nick")
+                .name("Lena")
+                .build();
+        userController.create(user);
+        filmController.addLike(1, 1);
+        assertEquals(1, filmController.findAll().get(0).getLikes().size());
     }
 }

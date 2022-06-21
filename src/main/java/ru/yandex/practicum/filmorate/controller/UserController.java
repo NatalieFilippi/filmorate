@@ -1,85 +1,72 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.interfaces.UserStorage;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    private long lastUsedId = 0;
-    private final HashMap<Long, User> users = new HashMap<>();
-    private final static Logger log = LoggerFactory.getLogger(UserController.class);
+    private final UserStorage userStorage;
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserStorage userStorage, UserService userService) {
+        this.userStorage = userStorage;
+        this.userService = userService;
+    }
 
     @GetMapping
     public List<User> findAll() {
-        return new ArrayList<>(users.values());
+        return userStorage.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public User findById(@PathVariable("id") long id) throws ObjectNotFoundException {
+        return userStorage.findById(id);
     }
 
     @PostMapping
     public User create(@Valid @RequestBody User user) throws ValidationException {
-        String message = check(user);
-        if (message.isBlank()) {
-            user.setId(getNextId());
-            users.put(user.getId(), user);
-        } else {
-            log.debug(message);
-            throw new ValidationException(message);
-        }
-        log.debug("Сохранён пользователь: {}", user.toString());
-        return user;
+        return userStorage.create(user);
     }
 
     @PutMapping
-    public User put(@Valid @RequestBody User user) throws ValidationException {
-        String message = check(user);
-        if (!users.containsKey(user.getId())) {
-            throw new ValidationException("Пользователь не найден.");
-        }
-        if (message.isBlank()) {
-            users.put(user.getId(), user);
-        } else {
-            log.debug(message);
-            throw new ValidationException(message);
-        }
-        log.debug("Обновлён пользователь: {}", user.toString());
-        return user;
+    public User put(@Valid @RequestBody User user) throws ValidationException, ObjectNotFoundException {
+        return userStorage.put(user);
     }
 
-    private String check(User user) throws ValidationException {
-        String message = "";
-        if (user == null) {
-            message = "Данные о пользователе не заполнены.";
-        } else if (user.getEmail() == null || user.getEmail().isBlank()) {
-            message = "Адрес электронной почты не может быть пустым.";
-        } else if (!user.getEmail().contains("@")) {
-            message = "Адрес электронной почты должен содержать символ \"@\".";
-        } else if (user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
-            message = "Логин не может быть пустым и содержать пробелы.";
-        } else if (user.getBirthday().isAfter(LocalDate.now())) {
-            message = "Дата рождения не может быть в будущем.";
-        } else if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-        return message;
+    @PutMapping("/{id}/friends/{friendId}")
+    public User addFriend(@PathVariable("id") long id, @PathVariable("friendId") long friendId) throws ObjectNotFoundException {
+        return userService.addFriend(id, friendId);
     }
 
-    private long getNextId() {
-        return ++lastUsedId;
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public User deleteFromFriends(@PathVariable("id") long id, @PathVariable("friendId") long friendId) throws ObjectNotFoundException {
+        return userService.deleteFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> getFriends(@PathVariable("id") long id) throws ObjectNotFoundException {
+        return userService.getFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable("id") long id, @PathVariable("otherId") long otherId) throws ObjectNotFoundException {
+        return userService.getCommonFriends(id, otherId);
     }
 
     //метод для тестов
     public void deleteAll() {
-        users.clear();
+        userStorage.deleteAll();
     }
 
 }

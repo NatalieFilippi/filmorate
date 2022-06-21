@@ -5,8 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.controller.UserController;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
@@ -17,7 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 public class UserTest {
-    private UserController userController = new UserController();
+    private UserController userController = new UserController(
+            new InMemoryUserStorage(),
+            new UserService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
 
     @AfterEach
     private void afterEach() {
@@ -125,7 +132,7 @@ public class UserTest {
     }
 
     @Test
-    void updateUser() throws ValidationException {
+    void updateUser() throws ValidationException, ObjectNotFoundException {
         User user = User.builder()
                 .birthday(LocalDate.of(1980, Month.NOVEMBER,17))
                 .email("name@yandex.ru")
