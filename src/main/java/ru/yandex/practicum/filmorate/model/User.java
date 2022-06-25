@@ -21,7 +21,7 @@ public class User {
     private String name;
     @Past
     private LocalDate birthday;
-    private Set<Long> friends;
+    private HashSet<Long> friends;
 
     public long addFriend(long id) {
         if (friends == null) {

@@ -2,13 +2,15 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.interfaces.FilmStorage;
 import ru.yandex.practicum.filmorate.interfaces.UserStorage;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Comparator;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,26 +25,46 @@ public class FilmService {
         this.userStorage = userStorage;
     }
 
+    public List<Film> findAll() {
+        return filmStorage.findAll();
+    }
+
+    public Film findById(long id) throws ObjectNotFoundException {
+        return filmStorage.findById(id);
+    }
+
+    public Film create(Film film) throws ValidationException {
+        return filmStorage.create(film);
+    }
+
+    public Film put(Film film) throws ValidationException, ObjectNotFoundException {
+        return filmStorage.put(film);
+    }
+
     public Film addLike(long filmId, long userId) throws ObjectNotFoundException {
-        if (filmStorage.findById(filmId) == null) {
+        Film film = filmStorage.findById(filmId);
+        User user = userStorage.findById(userId);
+        if (film == null) {
             throw new ObjectNotFoundException(String.format("Фильм с id %d не найден", filmId));
         }
-        if (userStorage.findById(userId) == null) {
+        if (user == null) {
             throw new ObjectNotFoundException(String.format("Пользователь с id %d не найден", userId));
         }
-        filmStorage.findById(filmId).addLike(userStorage.findById(userId));
-        return filmStorage.findById(filmId);
+        film.addLike(user);
+        return film;
     }
 
     public Film deleteLike(long filmId, long userId) throws ObjectNotFoundException {
-        if (filmStorage.findById(filmId) == null) {
+        Film film = filmStorage.findById(filmId);
+        User user = userStorage.findById(userId);
+        if (film == null) {
             throw new ObjectNotFoundException(String.format("Фильм с id %d не найден", filmId));
         }
-        if (userStorage.findById(userId) == null) {
+        if (user == null) {
             throw new ObjectNotFoundException(String.format("Пользователь с id %d не найден", userId));
         }
-        filmStorage.findById(userId).deleteLike(userStorage.findById(userId));
-        return filmStorage.findById(userId);
+        film.deleteLike(user);
+        return film;
     }
 
     public List<Film> findByRating(int count) {
@@ -56,6 +78,10 @@ public class FilmService {
                 })
                 .limit(count)
                 .collect(Collectors.toList());
+    }
+
+    public void deleteAll() {
+        filmStorage.deleteAll();
     }
 
 }

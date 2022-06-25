@@ -39,7 +39,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film create(@Valid @RequestBody Film film) throws ValidationException {
+    public Film create(Film film) throws ValidationException {
         String message = check(film);
         if (message.isBlank()) {
             film.setId(getNextId());
@@ -53,7 +53,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film put(@Valid @RequestBody Film film) throws ValidationException, ObjectNotFoundException {
+    public Film put(Film film) throws ValidationException, ObjectNotFoundException {
         String message = check(film);
         if (!films.containsKey(film.getId())) {
             throw new ObjectNotFoundException("Фильм не найден.");

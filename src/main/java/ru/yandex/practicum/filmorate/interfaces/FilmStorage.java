@@ -10,10 +10,10 @@ import java.util.List;
 
 public interface FilmStorage {
 
-    public List<Film> findAll();
-    public Film findById(long id) throws ObjectNotFoundException;
-    public Film create(Film film) throws ValidationException;
-    public Film put(Film film) throws ValidationException, ObjectNotFoundException;
-    public void deleteAll();
-    public Film delete(Film film) throws ValidationException;
+    List<Film> findAll();
+    Film findById(long id) throws ObjectNotFoundException;
+    Film create(Film film) throws ValidationException;
+    Film put(Film film) throws ValidationException, ObjectNotFoundException;
+    void deleteAll();
+    Film delete(Film film) throws ValidationException;
 }

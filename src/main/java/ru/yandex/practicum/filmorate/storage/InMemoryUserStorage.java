@@ -51,7 +51,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User put(@Valid @RequestBody User user) throws ValidationException, ObjectNotFoundException {
+    public User put(User user) throws ValidationException, ObjectNotFoundException {
         String message = check(user);
         if (!users.containsKey(user.getId())) {
             throw new ObjectNotFoundException("Пользователь не найден.");

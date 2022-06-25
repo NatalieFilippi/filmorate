@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 public class UserTest {
     private UserController userController = new UserController(
-            new InMemoryUserStorage(),
             new UserService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
 
     @AfterEach

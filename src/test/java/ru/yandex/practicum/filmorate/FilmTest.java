@@ -25,30 +25,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 public class FilmTest {
-    //private InMemoryFilmStorage inMemoryFilmStorage = new InMemoryFilmStorage();
+
     private FilmController filmController = new FilmController(
-            new InMemoryFilmStorage(),
             new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
 
     private UserController userController = new UserController(
-            new InMemoryUserStorage(),
             new UserService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
 
     @AfterEach
     private void afterEach() {
         filmController.deleteAll();
     }
-
-    /*@BeforeAll
-    private static void beforeAll() throws ValidationException {
-        User user = User.builder()
-                .birthday(LocalDate.of(1980, Month.NOVEMBER,17))
-                .email("name@yandex.ru")
-                .login("nick")
-                .name("Lena")
-                .build();
-        userController.create(user);
-    }*/
     @Test
     void createFilm() throws ValidationException {
         Film film = Film.builder()

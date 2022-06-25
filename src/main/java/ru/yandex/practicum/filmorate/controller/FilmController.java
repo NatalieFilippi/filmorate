@@ -14,33 +14,31 @@ import java.util.List;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private final FilmStorage filmStorage;
     private final FilmService filmService;
 
     @Autowired
-    public FilmController(FilmStorage filmStorage, FilmService filmService) {
-        this.filmStorage = filmStorage;
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
     }
 
     @GetMapping
     public List<Film> findAll() {
-        return filmStorage.findAll();
+        return filmService.findAll();
     }
 
     @GetMapping("/{id}")
     public Film findById(@Valid @PathVariable("id") long id) throws ObjectNotFoundException {
-        return filmStorage.findById(id);
+        return filmService.findById(id);
     }
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) throws ValidationException {
-        return filmStorage.create(film);
+        return filmService.create(film);
     }
 
     @PutMapping
     public Film put(@Valid @RequestBody Film film) throws ValidationException, ObjectNotFoundException {
-        return filmStorage.put(film);
+        return filmService.put(film);
     }
 
     @PutMapping("/{id}/like/{userId}")
@@ -63,7 +61,7 @@ public class FilmController {
 
     //метод для тестов
     public void deleteAll() {
-        filmStorage.deleteAll();
+        filmService.deleteAll();
     }
 
 }
