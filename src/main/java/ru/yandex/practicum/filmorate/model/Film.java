@@ -18,6 +18,7 @@ public class Film {
     private LocalDate releaseDate;
     @Positive
     private int duration;
+    private Set<User> likes;
 
     public Set<User> getLikes() {
         if (likes == null) {
@@ -25,8 +26,6 @@ public class Film {
         }
         return likes;
     }
-
-    private Set<User> likes;
 
     public int addLike(User user) {
         if (likes == null) {
