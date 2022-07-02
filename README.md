@@ -45,10 +45,8 @@ SELECT f.name,
        f.decription,
        f.release_date,
        f.duration,
-       g.name,
        r.name
 FROM film AS f
-LEFT JOIN genre AS g ON f.genre_id=g.genre_id
 LEFT JOIN rating AS r ON f.rating_id=r.rating_id
 ```
 
@@ -58,10 +56,8 @@ SELECT f.name,
        f.decription,
        f.release_date,
        f.duration,
-       g.name,
        r.name
 FROM film AS f
-LEFT JOIN genre AS g ON f.genre_id=g.genre_id
 LEFT JOIN rating AS r ON f.rating_id=r.rating_id
 WHERE film_id='$id'
 ```
@@ -72,14 +68,12 @@ SELECT f.name,
        f.decription,
        f.release_date,
        f.duration,
-       g.name,
        r.name
 FROM film AS f
-LEFT JOIN genre AS g ON f.genre_id=g.genre_id
 LEFT JOIN rating AS r ON f.rating_id=r.rating_id
-WHERE film_id IN (SELECT film_id
+WHERE film_id IN (SELECT film_id,
+                        COUNT(user_id)
                    FROM like
-                   WHERE COUNT(user_id)
                    GROUP BY film_id
                    ORDER BY COUNT(user_id) DESC)
 ```
