@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-@Component
+@Component("inMemoryUserStorage")
 public class InMemoryUserStorage implements UserStorage {
     private long lastUsedId = 0;
     private final HashMap<Long, User> users = new HashMap<>();
@@ -38,30 +38,18 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User create(@Valid @RequestBody User user) throws ValidationException {
-        String message = check(user);
-        if (message.isBlank()) {
-            user.setId(getNextId());
-            users.put(user.getId(), user);
-        } else {
-            log.debug(message);
-            throw new ValidationException(message);
-        }
+        user.setId(getNextId());
+        users.put(user.getId(), user);
         log.debug("Сохранён пользователь: {}", user.toString());
         return user;
     }
 
     @Override
     public User put(User user) throws ValidationException, ObjectNotFoundException {
-        String message = check(user);
         if (!users.containsKey(user.getId())) {
             throw new ObjectNotFoundException("Пользователь не найден.");
         }
-        if (message.isBlank()) {
-            users.put(user.getId(), user);
-        } else {
-            log.debug(message);
-            throw new ValidationException(message);
-        }
+        users.put(user.getId(), user);
         log.debug("Обновлён пользователь: {}", user.toString());
         return user;
     }
@@ -72,35 +60,33 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     public User delete(User user) throws ValidationException {
-        String message = check(user);
-        if (message.isBlank()) {
-            log.debug("Сохранён пользователь: {}", user.toString());
-            return users.remove(user.getId());
-        } else {
-            log.debug(message);
-            throw new ValidationException(message);
-        }
+        log.debug("Сохранён пользователь: {}", user.toString());
+        return users.remove(user.getId());
+    }
+
+    @Override
+    public void addFriend(Long userId, Long friendId) {
+
+    }
+
+    @Override
+    public boolean deleteFriend(Long userId, Long friendId) {
+        return false;
+    }
+
+    @Override
+    public List<User> getFriends(Long userId) {
+        return null;
+    }
+
+    @Override
+    public List<User> getCommonFriends(Long userId, Long otherId) {
+        return null;
     }
 
 
     //ДОПОЛНИТЕЛЬНЫЕ МЕТОДЫ
-    private String check(User user) throws ValidationException {
-        String message = "";
-        if (user == null) {
-            message = "Данные о пользователе не заполнены.";
-        } else if (user.getEmail() == null || user.getEmail().isBlank()) {
-            message = "Адрес электронной почты не может быть пустым.";
-        } else if (!user.getEmail().contains("@")) {
-            message = "Адрес электронной почты должен содержать символ \"@\".";
-        } else if (user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
-            message = "Логин не может быть пустым и содержать пробелы.";
-        } else if (user.getBirthday().isAfter(LocalDate.now())) {
-            message = "Дата рождения не может быть в будущем.";
-        } else if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-        return message;
-    }
+
 
     private long getNextId() {
         return ++lastUsedId;

@@ -14,5 +14,9 @@ public interface UserStorage {
     User create(User user) throws ValidationException;
     User put(User user) throws ValidationException, ObjectNotFoundException;
     void deleteAll();
-    User delete(User user) throws ValidationException;
+    User delete(User user) throws ValidationException, ObjectNotFoundException;
+    void addFriend(Long userId, Long friendId);
+    boolean deleteFriend(Long userId, Long friendId);
+    List<User> getFriends(Long userId);
+    List<User> getCommonFriends(Long userId, Long otherId);
 }

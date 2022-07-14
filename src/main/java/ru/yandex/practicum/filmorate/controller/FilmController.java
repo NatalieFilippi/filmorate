@@ -33,6 +33,7 @@ public class FilmController {
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) throws ValidationException {
+        System.out.println(film);
         return filmService.create(film);
     }
 
@@ -56,7 +57,7 @@ public class FilmController {
         if (count <= 0) {
             throw new ValidationException("Значение параметра count не может быть отрицательно!");
         }
-        return filmService.findByRating(count);
+        return filmService.getPopularFilms(count);
     }
 
     //метод для тестов

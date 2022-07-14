@@ -9,6 +9,8 @@ import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.interfaces.FilmStorage;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
@@ -40,30 +42,18 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film create(Film film) throws ValidationException {
-        String message = check(film);
-        if (message.isBlank()) {
-            film.setId(getNextId());
-            films.put(film.getId(), film);
-        } else {
-            log.debug(message);
-            throw new ValidationException(message);
-        }
+        film.setId(getNextId());
+        films.put(film.getId(), film);
         log.debug("Сохранён фильм: {}", film.toString());
         return film;
     }
 
     @Override
     public Film put(Film film) throws ValidationException, ObjectNotFoundException {
-        String message = check(film);
         if (!films.containsKey(film.getId())) {
             throw new ObjectNotFoundException("Фильм не найден.");
         }
-        if (message.isBlank()) {
-            films.put(film.getId(), film);
-        } else {
-            log.debug(message);
-            throw new ValidationException(message);
-        }
+        films.put(film.getId(), film);
         log.debug("Обновлён фильм: {}", film.toString());
         return film;
     }
@@ -75,14 +65,43 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film delete(@Valid @RequestBody Film film) throws ValidationException {
-        String message = check(film);
-        if (message.isBlank()) {
-            log.debug("Удалён фильм: {}", film.toString());
-            return films.remove(film.getId());
-        } else {
-            log.debug(message);
-            throw new ValidationException(message);
-        }
+        log.debug("Удалён фильм: {}", film.toString());
+        return films.remove(film.getId());
+    }
+
+    @Override
+    public boolean addLike(long filmId, long userId) {
+        return false;
+    }
+
+    @Override
+    public boolean deleteLike(long filmId, long userId) {
+        return false;
+    }
+
+    @Override
+    public List<Film> getPopularFilms(int count) {
+        return null;
+    }
+
+    @Override
+    public Mpa findMpaById(long id) throws ObjectNotFoundException {
+        return null;
+    }
+
+    @Override
+    public List<Mpa> findAllMpa() {
+        return null;
+    }
+
+    @Override
+    public Genre findGenreById(long id) throws ObjectNotFoundException {
+        return null;
+    }
+
+    @Override
+    public List<Genre> findAllGenre() {
+        return null;
     }
 
 
