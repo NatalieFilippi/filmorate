@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmServiceImpl;
+import ru.yandex.practicum.filmorate.interfaces.FilmService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -13,10 +13,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private final FilmServiceImpl filmService;
+    private final FilmService filmService;
 
     @Autowired
-    public FilmController(FilmServiceImpl filmService) {
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
     }
 

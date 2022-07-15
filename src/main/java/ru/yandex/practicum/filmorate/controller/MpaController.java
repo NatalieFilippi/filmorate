@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.service.FilmServiceImpl;
+import ru.yandex.practicum.filmorate.interfaces.FilmService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -15,10 +15,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/mpa")
 public class MpaController {
-    private final FilmServiceImpl filmService;
+    private final FilmService filmService;
 
     @Autowired
-    public MpaController(FilmServiceImpl filmService) {
+    public MpaController(FilmService filmService) {
         this.filmService = filmService;
     }
 

@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
+import ru.yandex.practicum.filmorate.interfaces.FilmService;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.service.FilmServiceImpl;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -15,10 +15,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/genres")
 public class GenreController {
-    private final FilmServiceImpl filmService;
+    private final FilmService filmService;
 
     @Autowired
-    public GenreController(FilmServiceImpl filmService) {
+    public GenreController(FilmService filmService) {
         this.filmService = filmService;
     }
 
