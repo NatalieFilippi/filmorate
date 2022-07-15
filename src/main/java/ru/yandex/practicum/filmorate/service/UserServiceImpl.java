@@ -1,31 +1,34 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.interfaces.FilmStorage;
+import ru.yandex.practicum.filmorate.interfaces.UserService;
 import ru.yandex.practicum.filmorate.interfaces.UserStorage;
 import ru.yandex.practicum.filmorate.model.User;
 
-import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
+@Slf4j
 @Service
-public class UserService {
-
-    private final static Logger log = LoggerFactory.getLogger(UserController.class);
+public class UserServiceImpl implements UserService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private static final String NO_DATA_FOUND = "Данные о пользователе не заполнены.";
+    private static final String EMPTY_EMAIL = "Адрес электронной почты не может быть пустым.";
+    private static final String INVALID_EMAIL = "Адрес электронной почты должен содержать символ \"@\".";
+    private static final String EMPTY_LOGIN = "Логин не может быть пустым и содержать пробелы.";
+    private static final String BIRTHDAY_IN_THE_FUTURE = "Дата рождения не может быть в будущем.";
+
     @Autowired
-    public UserService(FilmStorage filmStorage, UserStorage userStorage) {
+    public UserServiceImpl(FilmStorage filmStorage, UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
@@ -41,31 +44,35 @@ public class UserService {
     public User create(User user) throws ValidationException {
         String message = check(user);
         if (!message.isBlank()) {
-            log.debug(message);
+            log.debug("Ошибка при попытке добавления пользователя: " + message);
             throw new ValidationException(message);
         }
+        log.debug(String.format("Создан новый пользователь %d.", user.getId()));
         return userStorage.create(user);
     }
 
     public User put(User user) throws ValidationException, ObjectNotFoundException {
         String message = check(user);
         if (!message.isBlank()) {
-            log.debug(message);
+            log.debug("Ошибка при попытке редактирования пользователя: " + message);
             throw new ValidationException(message);
         }
+        log.debug(String.format("Изменения для пользователя %d успешно приняты.", user.getId()));
         return userStorage.put(user);
     }
 
     public void deleteAll() {
+        log.debug("Все пользователи удалены из системы. :(");
         userStorage.deleteAll();
     }
 
     public void delete(User user) throws ValidationException, ObjectNotFoundException {
         String message = check(user);
         if (!message.isBlank()) {
-            log.debug(message);
+            log.debug("Ошибка при попытке удаления пользователя: " + message);
             throw new ValidationException(message);
         }
+        log.debug(String.format("Пользователь %d удалён из системы.", user.getId()));
         userStorage.delete(user);
     }
 
@@ -73,12 +80,15 @@ public class UserService {
         User user = userStorage.findById(userId);
         User userFriend = userStorage.findById(friendId);
         if (user == null) {
+            log.debug(String.format("Ошибка при попытке добавить в друзья. Пользователь с id %d не найден", userId));
             throw new ObjectNotFoundException(String.format("Пользователь с id %d не найден", userId));
         }
         if (userFriend == null) {
+            log.debug(String.format("Ошибка при попытке добавить в друзья. Пользователь с id %d не найден", friendId));
             throw new ObjectNotFoundException(String.format("Пользователь с id %d не найден", friendId));
         }
         userStorage.addFriend(userId, friendId);
+        log.debug(String.format("Пользователь %d добавил в друзья пользователя %d", userId, friendId));
         return user;
     }
 
@@ -86,12 +96,15 @@ public class UserService {
         User user = userStorage.findById(userId);
         User userFriend = userStorage.findById(friendId);
         if (user == null) {
+            log.debug(String.format("Ошибка при попытке удалить из друзей. Пользователь с id %d не найден", userId));
             throw new ObjectNotFoundException(String.format("Пользователь с id %d не найден", userId));
         }
         if (userFriend == null) {
+            log.debug(String.format("Ошибка при попытке удалить из друзей. Пользователь с id %d не найден", friendId));
             throw new ObjectNotFoundException(String.format("Пользователь с id %d не найден", friendId));
         }
         if (userStorage.deleteFriend(userId, friendId)) {
+            log.debug(String.format("Пользователь %d удалил из друзей пользователя %d", userId, friendId));
             return user;
         } else {
             return null;
@@ -102,6 +115,7 @@ public class UserService {
     public List<User> getFriends(Long userId) throws ObjectNotFoundException {
         User user = userStorage.findById(userId);
         if (user == null) {
+            log.debug(String.format("Ошибка при попытке вывести список друзей. Пользователь с id %d не найден", userId));
             throw new ObjectNotFoundException(String.format("Пользователь с id %d не найден", userId));
         }
         return userStorage.getFriends(userId);
@@ -111,29 +125,31 @@ public class UserService {
         User user = userStorage.findById(userId);
         User otherUser = userStorage.findById(otherId);
         if (user == null) {
+            log.debug(String.format("Ошибка при попытке найти общих друзей. Пользователь с id %d не найден", userId));
             throw new ObjectNotFoundException(String.format("Пользователь с id %d не найден", userId));
         }
         if (otherUser == null) {
+            log.debug(String.format("Ошибка при попытке найти общих друзей. Пользователь с id %d не найден", otherId));
             throw new ObjectNotFoundException(String.format("Пользователь с id %d не найден", otherId));
         }
-
         return userStorage.getCommonFriends(userId,otherId);
     }
 
 
     //ДОПОЛНИТЕЛЬНЫЕ МЕТОДЫ
     private String check(User user) throws ValidationException {
+
         String message = "";
         if (user == null) {
-            message = "Данные о пользователе не заполнены.";
+            message = NO_DATA_FOUND;
         } else if (user.getEmail() == null || user.getEmail().isBlank()) {
-            message = "Адрес электронной почты не может быть пустым.";
+            message = EMPTY_EMAIL;
         } else if (!user.getEmail().contains("@")) {
-            message = "Адрес электронной почты должен содержать символ \"@\".";
+            message = INVALID_EMAIL;
         } else if (user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
-            message = "Логин не может быть пустым и содержать пробелы.";
+            message = EMPTY_LOGIN;
         } else if (user.getBirthday().isAfter(LocalDate.now())) {
-            message = "Дата рождения не может быть в будущем.";
+            message = BIRTHDAY_IN_THE_FUTURE;
         } else if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }

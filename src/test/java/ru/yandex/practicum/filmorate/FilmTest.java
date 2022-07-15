@@ -9,8 +9,8 @@ import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.service.FilmServiceImpl;
+import ru.yandex.practicum.filmorate.service.UserServiceImpl;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
@@ -24,10 +24,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class FilmTest {
 
     private FilmController filmController = new FilmController(
-            new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
+            new FilmServiceImpl(new InMemoryFilmStorage(), new InMemoryUserStorage()));
 
     private UserController userController = new UserController(
-            new UserService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
+            new UserServiceImpl(new InMemoryFilmStorage(), new InMemoryUserStorage()));
 
     @AfterEach
     private void afterEach() {

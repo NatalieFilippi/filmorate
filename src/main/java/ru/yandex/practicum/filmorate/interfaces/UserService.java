@@ -1,0 +1,20 @@
+package ru.yandex.practicum.filmorate.interfaces;
+
+import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.User;
+
+import java.util.List;
+
+public interface UserService {
+    List<User> findAll();
+    User findById(long id) throws ObjectNotFoundException;
+    User create(User user) throws ValidationException;
+    User put(User user) throws ValidationException, ObjectNotFoundException;
+    void deleteAll();
+    void delete(User user) throws ValidationException, ObjectNotFoundException;
+    User addFriend(Long userId, Long friendId) throws ObjectNotFoundException;
+    User deleteFriend(Long userId, Long friendId) throws ObjectNotFoundException;
+    List<User> getFriends(Long userId) throws ObjectNotFoundException;
+    List<User> getCommonFriends(Long userId, Long otherId) throws ObjectNotFoundException;
+}

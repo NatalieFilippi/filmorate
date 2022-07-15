@@ -11,10 +11,10 @@ import java.util.List;
 public interface UserStorage {
     List<User> findAll();
     User findById(long id) throws ObjectNotFoundException;
-    User create(User user) throws ValidationException;
-    User put(User user) throws ValidationException, ObjectNotFoundException;
+    User create(User user);
+    User put(User user) throws  ObjectNotFoundException;
     void deleteAll();
-    User delete(User user) throws ValidationException, ObjectNotFoundException;
+    User delete(User user) throws ObjectNotFoundException;
     void addFriend(Long userId, Long friendId);
     boolean deleteFriend(Long userId, Long friendId);
     List<User> getFriends(Long userId);

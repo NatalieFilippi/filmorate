@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import java.util.List;
 
 @Component("userDbStorage")
 @Primary
+@Slf4j
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
 
@@ -46,6 +48,7 @@ public class UserDbStorage implements UserStorage {
         final String sqlQuery = "select * from USERS where USER_ID = ?";
         final List<User> users = jdbcTemplate.query(sqlQuery, UserDbStorage::makeUser, id);
         if (users.size() == 0) {
+            log.debug(String.format("Пользователь %d не найден.", id));
             throw new ObjectNotFoundException("Пользователь не найден!");
         }
         return users.get(0);
@@ -60,7 +63,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User create(User user) throws ValidationException {
+    public User create(User user) {
         String sqlQuery = "insert into USERS(EMAIL, LOGIN, USER_NAME, BIRTHDAY) " +
                 "values (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -82,7 +85,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User put(User user) throws ValidationException, ObjectNotFoundException {
+    public User put(User user) throws ObjectNotFoundException {
         String sqlQuery = "update USERS set " +
                 "EMAIL = ?, LOGIN = ?, USER_NAME = ?, BIRTHDAY = ? " +
                 "where USER_ID = ?";
@@ -93,6 +96,7 @@ public class UserDbStorage implements UserStorage {
                 , user.getBirthday()
                 , user.getId());
         if (row == 0) {
+            log.debug(String.format("Пользователь %d не найден.", user.getId()));
             throw new ObjectNotFoundException("Пользователь не найден!");
         }
         return user;
@@ -104,11 +108,12 @@ public class UserDbStorage implements UserStorage {
         jdbcTemplate.update(sqlQuery);
     }
 
-    public User delete(User user) throws ValidationException, ObjectNotFoundException {
+    public User delete(User user) throws ObjectNotFoundException {
         String sqlQuery = "delete from USERS where USER_ID = ?";
         if (jdbcTemplate.update(sqlQuery, user.getId()) > 0) {
             return user;
         } else {
+            log.debug(String.format("Пользователь %d не найден.", user.getId()));
             throw new ObjectNotFoundException("Пользователь не найден!");
         }
     }
@@ -152,25 +157,5 @@ public class UserDbStorage implements UserStorage {
         }
         return friends;
     }
-
-    //ДОПОЛНИТЕЛЬНЫЕ МЕТОДЫ
-    private String check(User user) throws ValidationException {
-        String message = "";
-        if (user == null) {
-            message = "Данные о пользователе не заполнены.";
-        } else if (user.getEmail() == null || user.getEmail().isBlank()) {
-            message = "Адрес электронной почты не может быть пустым.";
-        } else if (!user.getEmail().contains("@")) {
-            message = "Адрес электронной почты должен содержать символ \"@\".";
-        } else if (user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
-            message = "Логин не может быть пустым и содержать пробелы.";
-        } else if (user.getBirthday().isAfter(LocalDate.now())) {
-            message = "Дата рождения не может быть в будущем.";
-        } else if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-        return message;
-    }
-
 
 }

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Component
 @Primary
+@Slf4j
 public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
@@ -47,6 +49,7 @@ public class FilmDbStorage implements FilmStorage {
         final String sqlQuery = "select * from FILMS left join MPA M on FILMS.MPA_ID = M.MPA_ID where FILM_ID = ?";
         final List<Film> films = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilm, id);
         if (films.size() == 0) {
+            log.debug(String.format("Фильм %d не найден.", id));
             throw new ObjectNotFoundException("Фильм не найден!");
         }
         Film film = films.get(0);
@@ -55,7 +58,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film create(Film film) throws ValidationException {
+    public Film create(Film film) {
         final String sqlQuery = "insert into FILMS(FILM_NAME, DESCRIPTION, DURATION, MPA_ID, RELEASE_DATE) " +
                 "values (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -101,7 +104,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film put(Film film) throws ValidationException, ObjectNotFoundException {
+    public Film put(Film film) throws ObjectNotFoundException {
         String sqlQuery = "update FILMS set " +
                 "FILM_NAME = ?, DESCRIPTION = ?, DURATION = ?, MPA_ID = ? , RELEASE_DATE = ?" +
                 "where FILM_ID = ?";
@@ -113,6 +116,7 @@ public class FilmDbStorage implements FilmStorage {
                 , film.getReleaseDate()
                 , film.getId());
         if (row == 0) {
+            log.debug(String.format("Фильм %d не найден.", film.getId()));
             throw new ObjectNotFoundException("Фильм не найден");
         }
         //Обновить таблицу с жанрами
@@ -136,11 +140,12 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film delete(Film film) throws ValidationException, ObjectNotFoundException {
+    public Film delete(Film film) throws ObjectNotFoundException {
         String sqlQuery = "delete from FILMS where FILM_ID = ?";
         if (jdbcTemplate.update(sqlQuery, film.getId()) > 0) {
             return film;
         } else {
+            log.debug(String.format("Фильм %d не найден.", film.getId()));
             throw new ObjectNotFoundException("Фильм не найден.");
         }
     }
@@ -177,6 +182,7 @@ public class FilmDbStorage implements FilmStorage {
         final String sqlQuery = "select * from MPA where MPA_ID = ?";
         final List<Mpa> mpa = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeMpa, id);
         if (mpa.size() == 0) {
+            log.debug(String.format("Неизвестный рейтинг %d.", id));
             throw new ObjectNotFoundException("Неизвестный рейтинг");
         }
         return mpa.get(0);
@@ -197,6 +203,7 @@ public class FilmDbStorage implements FilmStorage {
         final String sqlQuery = "select * from GENRES where GENRE_ID = ?";
         final List<Genre> genre = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeGenre, id);
         if (genre.size() == 0) {
+            log.debug(String.format("Неизвестный жанр %d.", id));
             throw new ObjectNotFoundException("Неизвестный жанр");
         }
         return genre.get(0);

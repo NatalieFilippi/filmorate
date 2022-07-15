@@ -37,7 +37,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User create(@Valid @RequestBody User user) throws ValidationException {
+    public User create(@Valid @RequestBody User user)  {
         user.setId(getNextId());
         users.put(user.getId(), user);
         log.debug("Сохранён пользователь: {}", user.toString());
@@ -45,7 +45,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User put(User user) throws ValidationException, ObjectNotFoundException {
+    public User put(User user) throws ObjectNotFoundException {
         if (!users.containsKey(user.getId())) {
             throw new ObjectNotFoundException("Пользователь не найден.");
         }
@@ -59,7 +59,7 @@ public class InMemoryUserStorage implements UserStorage {
         users.clear();
     }
 
-    public User delete(User user) throws ValidationException {
+    public User delete(User user) {
         log.debug("Сохранён пользователь: {}", user.toString());
         return users.remove(user.getId());
     }
