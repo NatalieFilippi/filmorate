@@ -1,11 +1,8 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.interfaces.FilmStorage;
@@ -33,14 +30,17 @@ public class UserServiceImpl implements UserService {
         this.userStorage = userStorage;
     }
 
+    @Override
     public List<User> findAll() {
         return userStorage.findAll();
     }
 
+    @Override
     public User findById(long id) throws ObjectNotFoundException {
         return userStorage.findById(id);
     }
 
+    @Override
     public User create(User user) throws ValidationException {
         String message = check(user);
         if (!message.isBlank()) {
@@ -51,6 +51,7 @@ public class UserServiceImpl implements UserService {
         return userStorage.create(user);
     }
 
+    @Override
     public User put(User user) throws ValidationException, ObjectNotFoundException {
         String message = check(user);
         if (!message.isBlank()) {
@@ -61,11 +62,13 @@ public class UserServiceImpl implements UserService {
         return userStorage.put(user);
     }
 
+    @Override
     public void deleteAll() {
         log.debug("Все пользователи удалены из системы. :(");
         userStorage.deleteAll();
     }
 
+    @Override
     public void delete(User user) throws ValidationException, ObjectNotFoundException {
         String message = check(user);
         if (!message.isBlank()) {
@@ -76,6 +79,7 @@ public class UserServiceImpl implements UserService {
         userStorage.delete(user);
     }
 
+    @Override
     public User addFriend(Long userId, Long friendId) throws ObjectNotFoundException {
         User user = userStorage.findById(userId);
         User userFriend = userStorage.findById(friendId);
@@ -92,6 +96,7 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    @Override
     public User deleteFriend(Long userId, Long friendId) throws ObjectNotFoundException {
         User user = userStorage.findById(userId);
         User userFriend = userStorage.findById(friendId);
@@ -112,6 +117,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
     public List<User> getFriends(Long userId) throws ObjectNotFoundException {
         User user = userStorage.findById(userId);
         if (user == null) {
@@ -121,6 +127,7 @@ public class UserServiceImpl implements UserService {
         return userStorage.getFriends(userId);
     }
 
+    @Override
     public List<User> getCommonFriends(Long userId, Long otherId) throws ObjectNotFoundException {
         User user = userStorage.findById(userId);
         User otherUser = userStorage.findById(otherId);

@@ -1,11 +1,8 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.interfaces.FilmService;
@@ -39,14 +36,17 @@ public class FilmServiceImpl implements FilmService {
         this.userStorage = userStorage;
     }
 
+    @Override
     public List<Film> findAll() {
         return filmStorage.findAll();
     }
 
+    @Override
     public Film findById(long id) throws ObjectNotFoundException {
         return filmStorage.findById(id);
     }
 
+    @Override
     public Film create(Film film) throws ValidationException {
         String message = check(film);
         if (!message.isBlank()) {
@@ -57,6 +57,7 @@ public class FilmServiceImpl implements FilmService {
         return filmStorage.create(film);
     }
 
+    @Override
     public Film put(Film film) throws ValidationException, ObjectNotFoundException {
         String message = check(film);
         if (!message.isBlank()) {
@@ -67,6 +68,7 @@ public class FilmServiceImpl implements FilmService {
         return filmStorage.put(film);
     }
 
+    @Override
     public Film addLike(long filmId, long userId) throws ObjectNotFoundException {
         Film film = filmStorage.findById(filmId);
         User user = userStorage.findById(userId);
@@ -85,6 +87,7 @@ public class FilmServiceImpl implements FilmService {
         return film;
     }
 
+    @Override
     public Film deleteLike(long filmId, long userId) throws ObjectNotFoundException {
         Film film = filmStorage.findById(filmId);
         User user = userStorage.findById(userId);
@@ -102,15 +105,18 @@ public class FilmServiceImpl implements FilmService {
         return film;
     }
 
+    @Override
     public List<Film> getPopularFilms(int count) {
         return filmStorage.getPopularFilms(count);
     }
 
+    @Override
     public void deleteAll() {
         log.debug("Все фильмы удалены из системы. :(");
         filmStorage.deleteAll();
     }
 
+    @Override
     public void delete(Film film) throws ValidationException, ObjectNotFoundException {
         String message = check(film);
         if (!message.isBlank()) {
@@ -121,18 +127,22 @@ public class FilmServiceImpl implements FilmService {
         filmStorage.delete(film);
     }
 
+    @Override
     public Mpa findMpaById(long id) throws ObjectNotFoundException {
         return filmStorage.findMpaById(id);
     }
 
+    @Override
     public List<Mpa> findAllMpa() {
         return filmStorage.findAllMpa();
     }
 
+    @Override
     public Genre findGenreById(long id) throws ObjectNotFoundException {
         return filmStorage.findGenreById(id);
     }
 
+    @Override
     public List<Genre> findAllGenre() {
         return filmStorage.findAllGenre();
     }
