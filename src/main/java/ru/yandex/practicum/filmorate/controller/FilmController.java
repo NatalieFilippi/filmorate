@@ -45,6 +45,11 @@ public class FilmController {
         return filmService.addLike(id,userId);
     }
 
+    @DeleteMapping("/{filmId}")
+    public void deleteFilm(@PathVariable("filmId") long filmId) throws ObjectNotFoundException, ValidationException {
+        filmService.delete(filmId);
+    }
+
     @DeleteMapping("/{id}/like/{userId}")
     public Film deleteLike(@PathVariable("id") long id, @PathVariable("userId") long userId) throws ObjectNotFoundException {
         return filmService.deleteLike(id, userId);

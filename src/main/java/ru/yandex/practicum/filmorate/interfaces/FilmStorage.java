@@ -17,7 +17,7 @@ public interface FilmStorage {
     Film create(Film film);
     Film put(Film film) throws ObjectNotFoundException;
     void deleteAll();
-    Film delete(Film film) throws ObjectNotFoundException;
+    void delete(long filmId) throws ObjectNotFoundException;
     boolean addLike(long filmId, long userId);
     boolean deleteLike(long filmId, long userId);
     List<Film> getPopularFilms(int count);

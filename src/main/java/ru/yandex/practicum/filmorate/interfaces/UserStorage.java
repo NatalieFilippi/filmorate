@@ -14,7 +14,7 @@ public interface UserStorage {
     User create(User user);
     User put(User user) throws  ObjectNotFoundException;
     void deleteAll();
-    User delete(User user) throws ObjectNotFoundException;
+    void delete(long userId) throws ObjectNotFoundException;
     void addFriend(Long userId, Long friendId);
     boolean deleteFriend(Long userId, Long friendId);
     List<User> getFriends(Long userId);
