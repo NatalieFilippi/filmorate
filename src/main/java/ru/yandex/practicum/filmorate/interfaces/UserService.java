@@ -12,7 +12,7 @@ public interface UserService {
     User create(User user) throws ValidationException;
     User put(User user) throws ValidationException, ObjectNotFoundException;
     void deleteAll();
-    void delete(User user) throws ValidationException, ObjectNotFoundException;
+    void delete(long userId) throws  ObjectNotFoundException;
     User addFriend(Long userId, Long friendId) throws ObjectNotFoundException;
     User deleteFriend(Long userId, Long friendId) throws ObjectNotFoundException;
     List<User> getFriends(Long userId) throws ObjectNotFoundException;

@@ -140,14 +140,13 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film delete(Film film) throws ObjectNotFoundException {
+    public void delete(long id) throws ObjectNotFoundException {
         String sqlQuery = "delete from FILMS where FILM_ID = ?";
-        if (jdbcTemplate.update(sqlQuery, film.getId()) > 0) {
-            return film;
-        } else {
-            log.debug(String.format("Фильм %d не найден.", film.getId()));
+        if (jdbcTemplate.update(sqlQuery, id) == 0) {
+            log.debug(String.format("Фильм %d не найден.", id));
             throw new ObjectNotFoundException("Фильм не найден.");
         }
+        log.debug(String.format("Фильм %d удалён из системы.", id));
     }
 
     @Override
@@ -170,9 +169,11 @@ public class FilmDbStorage implements FilmStorage {
                 + "group by F.film_id, film_name, description, duration, f.mpa_id, m.mpa_id, m.mpa_name, release_date "
                 + "order by COUNT(L.USER_ID) desc LIMIT ?";
         final List<Film> films = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilm, count);
-        System.out.println("3");
         if (films.size() == 0) {
             return Collections.emptyList();
+        }
+        for (Film film : films) {
+            setGenre(film);
         }
         return films;
     }

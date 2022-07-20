@@ -22,19 +22,19 @@ CREATE TABLE IF NOT EXISTS GENRES (
                                     genre_name VARCHAR
 );
 CREATE TABLE IF NOT EXISTS FILM_GENRES (
-                                    film_id INT REFERENCES FILMS(film_id),
-                                    genre_id INT REFERENCES GENRES(genre_id),
+                                    film_id INT REFERENCES FILMS(film_id) ON DELETE CASCADE,
+                                    genre_id INT REFERENCES GENRES(genre_id) ON DELETE CASCADE,
                                     PRIMARY KEY(film_id, genre_id)
 );
 CREATE TABLE IF NOT EXISTS LIKES (
-                                    user_id INT REFERENCES USERS(user_id),
-                                    film_id INT REFERENCES FILMS(film_id),
+                                    user_id INT REFERENCES USERS(user_id) ON DELETE CASCADE,
+                                    film_id INT REFERENCES FILMS(film_id) ON DELETE CASCADE,
                                     PRIMARY KEY(user_id, film_id)
 );
 CREATE TABLE IF NOT EXISTS FRIENDS (
                                     id INT PRIMARY KEY AUTO_INCREMENT,
-                                    user_id INT REFERENCES USERS(user_id),
-                                    friend_id INT REFERENCES USERS(user_id),
+                                    user_id INT REFERENCES USERS(user_id) ON DELETE CASCADE,
+                                    friend_id INT REFERENCES USERS(user_id) ON DELETE CASCADE,
                                     status BOOLEAN
 );
 
