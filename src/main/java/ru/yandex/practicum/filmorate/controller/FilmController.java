@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -9,6 +10,7 @@ import ru.yandex.practicum.filmorate.interfaces.FilmService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/films")
@@ -51,11 +53,16 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10", required = false) Integer count) throws ValidationException {
+    public List<Film> getPopularFilms(
+            @RequestParam(defaultValue = "10", required = false) Integer count,
+            @RequestParam Map<String, String> params)
+            throws ValidationException {
+
         if (count <= 0) {
             throw new ValidationException("Значение параметра count не может быть отрицательно!");
         }
-        return filmService.getPopularFilms(count);
+
+        return filmService.getPopularFilms(count, params);
     }
 
     //метод для тестов
