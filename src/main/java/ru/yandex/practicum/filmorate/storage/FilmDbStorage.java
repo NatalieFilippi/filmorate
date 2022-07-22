@@ -1,14 +1,10 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Primary;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -134,14 +130,13 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film delete(Film film) throws ObjectNotFoundException {
+    public void delete(long id) throws ObjectNotFoundException {
         String sqlQuery = "DELETE FROM FILMS WHERE FILM_ID = ?";
-        if (jdbcTemplate.update(sqlQuery, film.getId()) > 0) {
-            return film;
-        } else {
-            log.debug(String.format("Фильм %d не найден.", film.getId()));
+        if (jdbcTemplate.update(sqlQuery, id) == 0) {
+            log.debug(String.format("Фильм %d не найден.", id));
             throw new ObjectNotFoundException("Фильм не найден.");
         }
+        log.debug(String.format("Фильм %d удалён из системы.", id));
     }
 
     @Override
