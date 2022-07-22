@@ -18,6 +18,7 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
@@ -80,8 +81,8 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopularFilms(int count) {
-        return null;
+    public List<Film> getPopularFilms(int count, Map<String, String> params) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

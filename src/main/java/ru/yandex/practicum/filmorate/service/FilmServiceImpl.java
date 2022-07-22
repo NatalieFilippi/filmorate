@@ -16,6 +16,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
+import java.util.Map;
 
 
 @Slf4j
@@ -106,8 +107,8 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public List<Film> getPopularFilms(int count) {
-        return filmStorage.getPopularFilms(count);
+    public List<Film> getPopularFilms(int count, Map<String, String> params) {
+        return filmStorage.getPopularFilms(count, params);
     }
 
     @Override
