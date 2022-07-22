@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate;
+package ru.yandex.practicum.filmorate.inmemorytest;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -153,7 +153,7 @@ public class UserTest {
 
         userController.create(user);
         user.setId(2);
-        ValidationException ex = assertThrows(ValidationException.class, ()->userController.put(user));
+        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class, ()->userController.put(user));
         assertEquals(ex.getMessage(), "Пользователь не найден.");
     }
 

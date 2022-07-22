@@ -69,14 +69,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete(User user) throws ValidationException, ObjectNotFoundException {
-        String message = check(user);
-        if (!message.isBlank()) {
-            log.debug("Ошибка при попытке удаления пользователя: " + message);
-            throw new ValidationException(message);
-        }
-        log.debug(String.format("Пользователь %d удалён из системы.", user.getId()));
-        userStorage.delete(user);
+    public void delete(long id) throws ObjectNotFoundException {
+        userStorage.delete(id);
     }
 
     @Override

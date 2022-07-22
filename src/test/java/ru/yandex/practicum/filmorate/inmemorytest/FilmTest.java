@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate;
+package ru.yandex.practicum.filmorate.inmemorytest;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -95,7 +95,7 @@ public class FilmTest {
         Film film = Film.builder()
                 .id(1)
                 .description("Фильп про Лену")
-                .duration(40)
+                .duration(0)
                 .name("Lena")
                 .releaseDate(LocalDate.of(2022,Month.MARCH,25))
                 .build();
@@ -129,7 +129,7 @@ public class FilmTest {
 
         filmController.create(film);
         film.setId(2);
-        ValidationException ex = assertThrows(ValidationException.class, ()->filmController.put(film));
+        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class, ()->filmController.put(film));
         assertEquals(ex.getMessage(), "Фильм не найден.");
     }
 
@@ -138,28 +138,5 @@ public class FilmTest {
         ValidationException ex = assertThrows(ValidationException.class, ()->filmController.create(null));
         assertEquals(ex.getMessage(), "Данные о фильме не заполнены.");
         assertEquals(0, filmController.findAll().size());
-    }
-
-    @Test
-    void addLike() throws ValidationException, ObjectNotFoundException {
-        Film film = Film.builder()
-                .id(1)
-                .name("Lena")
-                .description("Фильп про Лену")
-                .duration(200)
-                .releaseDate(LocalDate.of(2022,Month.MARCH,25))
-                .build();
-
-        filmController.create(film);
-
-        User user = User.builder()
-                .birthday(LocalDate.of(1980, Month.NOVEMBER,17))
-                .email("name@yandex.ru")
-                .login("nick")
-                .name("Lena")
-                .build();
-        userController.create(user);
-        filmController.addLike(1, 1);
-        //assertEquals(1, filmController.findAll().get(0).getLikes().size());
     }
 }

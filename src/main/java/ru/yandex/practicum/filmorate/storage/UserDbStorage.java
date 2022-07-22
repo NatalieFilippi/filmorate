@@ -108,14 +108,13 @@ public class UserDbStorage implements UserStorage {
         jdbcTemplate.update(sqlQuery);
     }
 
-    public User delete(User user) throws ObjectNotFoundException {
+    public void delete(long id) throws ObjectNotFoundException {
         String sqlQuery = "delete from USERS where USER_ID = ?";
-        if (jdbcTemplate.update(sqlQuery, user.getId()) > 0) {
-            return user;
-        } else {
-            log.debug(String.format("Пользователь %d не найден.", user.getId()));
+        if (jdbcTemplate.update(sqlQuery, id) == 0) {
+            log.debug(String.format("Пользователь %d не найден.", id));
             throw new ObjectNotFoundException("Пользователь не найден!");
         }
+        log.debug(String.format("Пользователь %d удалён из системы.", id));
     }
 
     public void addFriend(Long userId, Long friendId) {

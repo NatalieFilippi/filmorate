@@ -120,14 +120,8 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public void delete(Film film) throws ValidationException, ObjectNotFoundException {
-        String message = check(film);
-        if (!message.isBlank()) {
-            log.debug("Ошибка при попытке удаления фильма из системы: " + message);
-            throw new ValidationException(message);
-        }
-        log.debug(String.format("Фильм %d удалён из системы.", film.getId()));
-        filmStorage.delete(film);
+    public void delete(long id) throws ValidationException, ObjectNotFoundException {
+        filmStorage.delete(id);
     }
 
     @Override
