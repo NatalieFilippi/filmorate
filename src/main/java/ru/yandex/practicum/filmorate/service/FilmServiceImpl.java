@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -22,6 +23,7 @@ import java.util.Map;
 @Slf4j
 @Service
 public class FilmServiceImpl implements FilmService {
+
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
     private final static LocalDate DATE_BORN_MOVIE = LocalDate.of(1895, Month.DECEMBER, 28);
@@ -32,7 +34,7 @@ public class FilmServiceImpl implements FilmService {
     private static final String EARLY_RELEASE_DATE = "Дата релиза не может быть раньше даты 28.12.1895";
 
     @Autowired
-    public FilmServiceImpl(FilmStorage filmStorage, UserStorage userStorage) {
+    public FilmServiceImpl(@Qualifier("filmDb") FilmStorage filmStorage, UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }

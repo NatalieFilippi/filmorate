@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 public class UserTest {
     private UserController userController = new UserController(
-            new UserServiceImpl(new InMemoryFilmStorage(), new InMemoryUserStorage()));
+            new UserServiceImpl(new InMemoryUserStorage()));
 
     @AfterEach
     private void afterEach() {

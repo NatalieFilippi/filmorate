@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -16,7 +17,7 @@ import java.util.*;
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
-    private final FilmStorage filmStorage;
+
     private final UserStorage userStorage;
     private static final String NO_DATA_FOUND = "Данные о пользователе не заполнены.";
     private static final String EMPTY_EMAIL = "Адрес электронной почты не может быть пустым.";
@@ -25,8 +26,7 @@ public class UserServiceImpl implements UserService {
     private static final String BIRTHDAY_IN_THE_FUTURE = "Дата рождения не может быть в будущем.";
 
     @Autowired
-    public UserServiceImpl(FilmStorage filmStorage, UserStorage userStorage) {
-        this.filmStorage = filmStorage;
+    public UserServiceImpl(UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 

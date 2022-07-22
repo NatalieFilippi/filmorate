@@ -27,7 +27,7 @@ public class FilmTest {
             new FilmServiceImpl(new InMemoryFilmStorage(), new InMemoryUserStorage()));
 
     private UserController userController = new UserController(
-            new UserServiceImpl(new InMemoryFilmStorage(), new InMemoryUserStorage()));
+            new UserServiceImpl(new InMemoryUserStorage()));
 
     @AfterEach
     private void afterEach() {
