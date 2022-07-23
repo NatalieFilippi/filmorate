@@ -66,6 +66,11 @@ public class UserController {
         return userService.getCommonFriends(id, otherId);
     }
 
+    @GetMapping("/{id}/feed")
+    public List<User> getFeed(@PathVariable("id") long id) throws ObjectNotFoundException {
+        return userService.getFeed(id);
+    }
+
     //метод для тестов
     public void deleteAll() {
         userService.deleteAll();
