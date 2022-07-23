@@ -116,7 +116,7 @@ public class UserDbStorage implements UserStorage {
 
         if (!recipientFriends.isEmpty() && recipientFriends.contains(senderId)) {
 
-            String query = "UPDATE friends set status = ? " +
+            String query = "UPDATE friends SET status = ? " +
                     "where (user_id = ? and friend_id = ?) " +
                     "or (user_id = ? and friend_id = ?)";
 
