@@ -1,22 +1,21 @@
 package ru.yandex.practicum.filmorate.interfaces;
 
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import javax.validation.Valid;
+import java.util.Collection;
 import java.util.List;
 
 public interface UserStorage {
-    List<User> findAll();
+    Collection<User> findAll();
     User findById(long id) throws ObjectNotFoundException;
     User create(User user);
-    User put(User user) throws  ObjectNotFoundException;
+    User updateUser(User user) throws  ObjectNotFoundException;
     void deleteAll();
-    void delete(long userId) throws ObjectNotFoundException;
-    void addFriend(Long userId, Long friendId);
-    boolean deleteFriend(Long userId, Long friendId);
-    List<User> getFriends(Long userId);
-    List<User> getCommonFriends(Long userId, Long otherId);
+    void deleteUser(long userId) throws ObjectNotFoundException;
+    void addFriend(long userId, long friendId);
+    void deleteFriend(long userId, long friendId);
+    Collection<User> findFriends(long userId);
+
+    Collection<User> findCommonFriends(long userId, long otherId);
 }

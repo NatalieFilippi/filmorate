@@ -6,12 +6,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.interfaces.UserStorage;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +43,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User put(User user) throws ObjectNotFoundException {
+    public User updateUser(User user) throws ObjectNotFoundException {
         if (!users.containsKey(user.getId())) {
             throw new ObjectNotFoundException("Пользователь не найден.");
         }
@@ -59,28 +57,27 @@ public class InMemoryUserStorage implements UserStorage {
         users.clear();
     }
 
-    public void delete(long id) {
+    public void deleteUser(long id) {
         log.debug("Удалён пользователь: {}", id);
         users.remove(id);
     }
 
     @Override
-    public void addFriend(Long userId, Long friendId) {
+    public void addFriend(long userId, long friendId) {
 
     }
 
     @Override
-    public boolean deleteFriend(Long userId, Long friendId) {
-        return false;
+    public void deleteFriend(long userId, long friendId) {
     }
 
     @Override
-    public List<User> getFriends(Long userId) {
+    public List<User> findFriends(long userId) {
         return null;
     }
 
     @Override
-    public List<User> getCommonFriends(Long userId, Long otherId) {
+    public List<User> findCommonFriends(long userId, long otherId) {
         return null;
     }
 

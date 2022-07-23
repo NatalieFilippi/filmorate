@@ -1,14 +1,16 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.*;
-
-import javax.validation.constraints.NotBlank;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class Genre {
     private int id;
-    @NotBlank
     private String name;
+
+    @JsonCreator
+    public Genre(int id) {
+        this.id = id;
+    }
 }

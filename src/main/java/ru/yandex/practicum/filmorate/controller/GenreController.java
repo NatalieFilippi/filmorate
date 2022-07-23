@@ -1,34 +1,29 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
-import ru.yandex.practicum.filmorate.interfaces.FilmService;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.service.FilmServiceImpl;
 
-import javax.validation.Valid;
-import java.util.List;
+import java.util.Collection;
 
 @RestController
 @RequestMapping("/genres")
+@RequiredArgsConstructor
 public class GenreController {
-    private final FilmService filmService;
-
-    @Autowired
-    public GenreController(FilmService filmService) {
-        this.filmService = filmService;
-    }
+    private final FilmServiceImpl filmService;
 
     @GetMapping
-    public List<Genre> findAll() {
+    public Collection<Genre> findAll() {
         return filmService.findAllGenre();
     }
 
     @GetMapping("/{id}")
-    public Genre findById(@Valid @PathVariable("id") long id) throws ObjectNotFoundException {
-        return filmService.findGenreById(id);
+    public Genre findById(@PathVariable("id") int genreId) throws ObjectNotFoundException {
+        return filmService.findGenreById(genreId);
     }
 }

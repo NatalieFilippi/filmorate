@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.interfaces.FilmStorage;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -18,6 +19,7 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
@@ -28,15 +30,12 @@ public class InMemoryFilmStorage implements FilmStorage {
     private final static Logger log = LoggerFactory.getLogger(FilmController.class);
 
     @Override
-    public List<Film> findAll() {
+    public List<Film> findAllFilms() {
         return new ArrayList<>(films.values());
     }
 
     @Override
-    public Film findById(long id) throws ObjectNotFoundException {
-        if (!films.containsKey(id)) {
-            throw new ObjectNotFoundException("Фильм не найден!");
-        }
+    public Film findFilmById(long id) {
         return films.get(id);
     }
 
@@ -49,10 +48,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film put(Film film) throws ObjectNotFoundException {
-        if (!films.containsKey(film.getId())) {
-            throw new ObjectNotFoundException("Фильм не найден.");
-        }
+    public Film updateFilm(Film film) {
         films.put(film.getId(), film);
         log.debug("Обновлён фильм: {}", film.toString());
         return film;
@@ -64,7 +60,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void delete(long id) {
+    public void deleteFilm(long id) {
         log.debug("Удалён фильм: {}", id);
         films.remove(id);
     }
@@ -80,30 +76,19 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopularFilms(int count) {
+    public List<Film> findNMostPopularFilms(Optional<Integer> count) {
         return null;
     }
 
     @Override
-    public Mpa findMpaById(long id) throws ObjectNotFoundException {
+    public List<Film> findFilmsOfDirectorSortByYear(int directorId) {
         return null;
     }
 
     @Override
-    public List<Mpa> findAllMpa() {
+    public List<Film> findFilmsOfDirectorSortByLikes(int directorId) {
         return null;
     }
-
-    @Override
-    public Genre findGenreById(long id) throws ObjectNotFoundException {
-        return null;
-    }
-
-    @Override
-    public List<Genre> findAllGenre() {
-        return null;
-    }
-
 
     //ДОПОЛНИТЕЛЬНЫЕ МЕТОДЫ
     private String check(Film film) throws ValidationException {

@@ -1,32 +1,26 @@
 package ru.yandex.practicum.filmorate.interfaces;
 
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
 
-import javax.validation.Valid;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface FilmStorage {
 
-    List<Film> findAll();
-    Film findById(long id) throws ObjectNotFoundException;
+    Collection<Film> findAllFilms();
+    Film findFilmById(long id);
     Film create(Film film);
-    Film put(Film film) throws ObjectNotFoundException;
+    Film updateFilm(Film film);
     void deleteAll();
-    void delete(long filmId) throws ObjectNotFoundException;
+    void deleteFilm(long filmId);
     boolean addLike(long filmId, long userId);
     boolean deleteLike(long filmId, long userId);
-    List<Film> getPopularFilms(int count);
+    Collection<Film> findNMostPopularFilms(Optional<Integer> count);
 
-    Mpa findMpaById(long id) throws ObjectNotFoundException;
+    Collection<Film> findFilmsOfDirectorSortByYear(int directorId);
 
-    List<Mpa> findAllMpa();
+    Collection<Film> findFilmsOfDirectorSortByLikes(int directorId);
 
-    Genre findGenreById(long id) throws ObjectNotFoundException;
-
-    List<Genre> findAllGenre();
 }
