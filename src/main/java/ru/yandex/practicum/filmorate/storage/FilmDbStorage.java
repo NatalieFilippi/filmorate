@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -34,31 +33,6 @@ public class FilmDbStorage implements FilmStorage {
     private final GenreDao genreDao;
     private final MpaDao mpaDao;
 
-    /*    @Override
-      public List<Film> findAllFilms() {
-            final String sqlQuery = "SELECT * FROM films ORDER BY film_id";
-            final List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm);
-            if (films.size() == 0) {
-                return Collections.emptyList();
-            }
-            for (Film film : films) {
-                setGenre(film);
-            }
-            return films;
-        }
-
-        @Override
-        public Film findFilmById(long id) throws ObjectNotFoundException {
-            final String sqlQuery = "SELECT * FROM films WHERE film_id = ?";
-            final List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm, id);
-            if (films.size() == 0) {
-                log.debug(String.format("Фильм %d не найден.", id));
-                throw new ObjectNotFoundException("Фильм не найден!");
-            }
-            Film film = films.get(0);
-            setGenre(film);
-            return film;
-        }*/
     @Override
     public Collection<Film> findAllFilms() {
         String sql = "SELECT * FROM films ORDER BY film_id";
@@ -121,11 +95,10 @@ public class FilmDbStorage implements FilmStorage {
         if (rows == 1) {
             Film updFilm = findFilmById(film.getId());
             if (initFilm.getGenres() != null && updFilm.getGenres() == null) {
-                updFilm.setGenres(new HashSet<>()); // using to fit postman tests only
-                //updFilm.setDirectors(new HashSet<>()); // using to fit postman tests only
+                updFilm.setGenres(new HashSet<>()); // для прохождения теста postman
             }
             if (initFilm.getDirectors().size() != 0 && updFilm.getDirectors().size() == 0) {
-                updFilm.setDirectors(null); // using to fit postman tests only
+                updFilm.setDirectors(null); // для прохождения теста postman
             }
             return updFilm;
         }
@@ -171,8 +144,6 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, this::makeFilm, count.orElse(10));
     }
 
-
-
     @Override
     public Collection<Film> findFilmsOfDirectorSortByYear(int directorId) {
         String sqlQuery = "SELECT fl.film_id, " +
@@ -203,29 +174,7 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, this::makeFilm, directorId);
     }
 
-
-/*    private Film setGenre(Film film) {
-        final String sqlQueryGenre = "select G.GENRE_ID, G.GENRE_NAME from FILM_GENRES FG " +
-                "left join GENRES G on G.GENRE_ID = FG.GENRE_ID " +
-                "where FG.FILM_ID = ?";
-        List<Genre> genres = jdbcTemplate.query(sqlQueryGenre, FilmDbStorage::makeGenre , film.getId());
-        film.setGenres((Set<Genre>) genres);
-        return film;
-    }*/
-
-/*    private Film setDirector(Film film) {
-        final String sqlQueryDirector = "select D.DIRECTOR_ID, D.DIRECTOR_NAME from FILM_DIRECTORS FD " +
-                "left join DIRECTORS D on D.DIRECTOR_ID = FD.DIRECTOR_ID " +
-                "where FD.FILM_ID = ?";
-        List<Director> directors = jdbcTemplate.query(sqlQueryDirector, FilmDbStorage::makeDirector , film.getId());
-        film.setDirectors((Set<Director>) directors);
-        return film;
-    }*/
-
-
-
-    //todo director
-    //МАППЕРЫ
+    //МАППЕР
     private Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
         long id = rs.getLong("film_id");
         String name = rs.getString("film_name");
@@ -242,5 +191,4 @@ public class FilmDbStorage implements FilmStorage {
         return new Film(id, name, description, releaseDate,
                 duration, directors, new HashSet<>(), mpa, genres);
     }
-
 }

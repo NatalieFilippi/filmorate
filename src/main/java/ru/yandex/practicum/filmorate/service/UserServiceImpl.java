@@ -16,7 +16,6 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl {
-    private final FilmStorage filmStorage;
     private final UserStorage userStorage;
 
     public Collection<User> findAll() {

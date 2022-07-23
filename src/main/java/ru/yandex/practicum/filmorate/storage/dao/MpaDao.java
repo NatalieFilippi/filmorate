@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.List;
 
 @Repository
 public class MpaDao {
@@ -27,33 +26,10 @@ public class MpaDao {
         }
     }
 
-    public List<Mpa> findAllMpa() {
+    public Collection<Mpa> findAllMpa() {
         String sql = "SELECT * FROM MPA";
         return jdbcTemplate.query(sql, this::makeMPA);
     }
-
-    /*
-    @Override
-    public Mpa findMpaById(int id) throws ObjectNotFoundException {
-        final String sqlQuery = "select * from MPA where MPA_ID = ?";
-        final List<Mpa> mpa = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeMpa, id);
-        if (mpa.size() == 0) {
-            log.debug(String.format("Неизвестный рейтинг %d.", id));
-            throw new ObjectNotFoundException("Неизвестный рейтинг");
-        }
-        return mpa.get(0);
-    }
-
-    @Override
-    public List<Mpa> findAllMpa() {
-        final String sqlQuery = "select * from MPA";
-        final List<Mpa> mpa = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeMpa);
-        if (mpa.size() == 0) {
-            return Collections.emptyList();
-        }
-        return mpa;
-    }
-    * */
 
     private Mpa makeMPA(ResultSet rs, int rowNum) throws SQLException {
         Integer id = rs.getInt("mpa_id");

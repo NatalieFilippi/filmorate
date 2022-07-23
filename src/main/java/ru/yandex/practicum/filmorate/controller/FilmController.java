@@ -57,7 +57,6 @@ public class FilmController {
         return filmService.deleteLike(filmId, userId);
     }
 
-    //todo delete
     //GET /films/popular?count={count}
     @GetMapping("/popular")
     public Collection<Film> getPopularFilms(
