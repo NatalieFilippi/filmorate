@@ -33,8 +33,7 @@ public class ReviewService {
 
     public Review create(Review review) throws ObjectNotFoundException {
         validationReview(review);
-        reviewStorage.create(review);
-        return getById(review.getReviewId());
+        return reviewStorage.create(review);
     }
 
     public Review getById(int reviewId) throws ObjectNotFoundException {
@@ -47,8 +46,7 @@ public class ReviewService {
 
     public Review update(Review review) throws ObjectNotFoundException {
         validationReview(review);
-        reviewStorage.update(review);
-        return getById(review.getReviewId());
+        return reviewStorage.update(review);
     }
 
     public void deleteById(int reviewId) throws ObjectNotFoundException {
