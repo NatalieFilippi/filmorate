@@ -15,7 +15,7 @@ public interface ReviewStorage {
 
     Review update(Review review) throws ObjectNotFoundException;
 
-    void deleteById(int reviewId);
+    void deleteById(int reviewId) throws ObjectNotFoundException;
 
     List<Review> getReviewsForFilm(Long filmId, int count);
 

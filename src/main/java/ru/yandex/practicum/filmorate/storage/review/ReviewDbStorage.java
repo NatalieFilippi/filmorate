@@ -81,8 +81,10 @@ public class ReviewDbStorage implements ReviewStorage {
     @Override
     public Review update(Review review) throws ObjectNotFoundException {
         if (review.getReviewId() == null) {
+            log.debug("В storage не содержится отзыв с ID: {}", review.getReviewId());
             throw new DataNotFoundException("В storage не содержится отзыв");
         } else if (getById(review.getReviewId()) == null) {
+            log.debug("В storage не содержится отзыв с ID: {}", review.getReviewId());
             throw new DataNotFoundException("В storage не содержится отзыв");
         }
         jdbcTemplate.update(SQL_UPDATE_REVIEW,
@@ -94,13 +96,13 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public void deleteById(int reviewId) {
+    public void deleteById(int reviewId) throws ObjectNotFoundException {
         if (reviewId == 0) {
             log.debug("В storage не содержится отзыв с ID: {}", reviewId);
-            throw new DataNotFoundException("В storage не содержится отзыв");
+            throw new ObjectNotFoundException("В storage не содержится отзыв");
         } else {
             jdbcTemplate.update(SQL_DELETE_REVIEW, reviewId);
-            log.info("(БД) Успешно уделен отзыв c ID: {}", reviewId);
+            log.info("(БД) Успешно удален отзыв c ID: {}", reviewId);
         }
     }
 
@@ -129,6 +131,7 @@ public class ReviewDbStorage implements ReviewStorage {
      */
     private Review makeReview(ResultSet resultSet, int i) throws SQLException {
         if (resultSet.getRow() == 0) {
+            log.debug("Невозможно сформировать объект класса из пустой строки");
             throw new DataNotFoundException("В storage не содержится отзыв");
         }
         return Review.builder()

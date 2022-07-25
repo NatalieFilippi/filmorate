@@ -51,7 +51,7 @@ public class ReviewService {
         return getById(review.getReviewId());
     }
 
-    public void deleteById(int reviewId) {
+    public void deleteById(int reviewId) throws ObjectNotFoundException {
         reviewStorage.deleteById(reviewId);
     }
 
