@@ -1,16 +1,14 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.interfaces.FilmService;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmServiceImpl;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/films")
@@ -76,10 +74,15 @@ public class FilmController {
         filmService.deleteAll();
     }
 
-    @GetMapping("/common")
+   /* @GetMapping("/common")
     public ResponseEntity<List<Film>> findCommonFilms(@RequestParam long userId, @RequestParam long friendId) throws ObjectNotFoundException {
         return filmService.findCommonFilms(userId, friendId).map(film -> new ResponseEntity<>(film, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(null, HttpStatus.NOT_FOUND));
+    }*/
+
+    @GetMapping("/{userId}/films/common/{friendId}")
+    public Optional<List<Film>> findCommonFilms(@PathVariable("userId") long userId, @PathVariable("friendId") long friendId) throws ObjectNotFoundException {
+        return filmService.findCommonFilms(userId, friendId); //userService.getCommonFriends(id, otherId);
     }
 
 

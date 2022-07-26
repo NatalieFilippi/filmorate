@@ -207,7 +207,7 @@ public class FilmServiceImpl implements FilmService {
         return message;
     }
 
-    public Optional<List<Film>> findCommonFilms(long userId, long friendId) throws ObjectNotFoundException {
+    /*public Optional<List<Film>> findCommonFilms(long userId, long friendId) throws ObjectNotFoundException {
         if (userStorage.findById(userId) != null &&
                 userStorage.findById(friendId) != null) {
             return Optional.of(filmStorage.getUserFilms(userId)
@@ -216,6 +216,23 @@ public class FilmServiceImpl implements FilmService {
                     .collect(Collectors.toList()));
         }
         return Optional.empty();
+    }*/
+
+    public Optional<List<Film>> findCommonFilms(long userId, long friendId) throws ObjectNotFoundException {
+        User user = userStorage.findById(userId);
+        User otherUser = userStorage.findById(friendId);
+        if (user == null) {
+            log.debug(String.format("Ошибка при попытке найти общих друзей. Пользователь с id %d не найден", userId));
+            throw new ObjectNotFoundException(String.format("Пользователь с id %d не найден", userId));
+        }
+        if (otherUser == null) {
+            log.debug(String.format("Ошибка при попытке найти общих друзей. Пользователь с id %d не найден", friendId));
+            throw new ObjectNotFoundException(String.format("Пользователь с id %d не найден", friendId));
+        }
+        return Optional.of(filmStorage.getUserFilms(userId)
+                .stream()
+                .filter(filmStorage.getUserFilms(friendId)::contains)
+                .collect(Collectors.toList()));
     }
 
 }
