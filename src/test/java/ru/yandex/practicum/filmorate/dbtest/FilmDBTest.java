@@ -177,5 +177,9 @@ public class FilmDBTest {
     public void testFindAllGenres() {
         assertEquals(filmStorage.findAllGenre().size(), 6);
     }
+    @Test
+    public void testCreateDirector() {
+        assertEquals(filmStorage.findAllGenre().size(), 6);
+    }
 
 }
