@@ -21,7 +21,6 @@ import java.util.List;
 public class FilmServiceImpl implements FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
-
     private final DirectorDao directorStorage;
     private final static LocalDate DATE_BORN_MOVIE = LocalDate.of(1895, Month.DECEMBER, 28);
     private static final String NO_DATA_FOUND = "Данные о фильме не заполнены.";
@@ -35,7 +34,6 @@ public class FilmServiceImpl implements FilmService {
         this.userStorage = userStorage;
         this.directorStorage = directorStorage;
     }
-
 
     @Override
     public List<Film> findAll() {

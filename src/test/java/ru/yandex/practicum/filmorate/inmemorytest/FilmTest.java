@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.service.FilmServiceImpl;
 import ru.yandex.practicum.filmorate.service.UserServiceImpl;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.dao.DirectorDao;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -24,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class FilmTest {
 
     private FilmController filmController = new FilmController(
-            new FilmServiceImpl(new InMemoryFilmStorage(), new InMemoryUserStorage()));
+            new FilmServiceImpl(new InMemoryFilmStorage(), new InMemoryUserStorage(), null));
 
     private UserController userController = new UserController(
             new UserServiceImpl(new InMemoryFilmStorage(), new InMemoryUserStorage()));
