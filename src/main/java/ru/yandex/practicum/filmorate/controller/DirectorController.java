@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.interfaces.FilmService;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.service.FilmServiceImpl;
 
@@ -14,7 +15,7 @@ import java.util.List;
 @RequestMapping(value = "/directors")
 @RequiredArgsConstructor
 public class DirectorController {
-    private final FilmServiceImpl filmService;
+    private final FilmService filmService;
 
     @GetMapping
     public List<Director> findAll() {
