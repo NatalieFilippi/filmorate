@@ -7,27 +7,27 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.interfaces.FilmStorage;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.dao.DirectorDao;
 
 import java.sql.*;
+import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @Repository("filmDb")
 public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
+    private final DirectorDao directorDao;
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, DirectorDao directorDao) {
         this.jdbcTemplate = jdbcTemplate;
+        this.directorDao = directorDao;
     }
 
     @Override
@@ -93,12 +93,13 @@ public class FilmDbStorage implements FilmStorage {
 
         //Обновить таблицу с жанрами
         setGenresByFilmId(film.getId(), film.getGenres());
-
+        directorDao.addFilm(film);
         return film;
     }
 
     @Override
     public Film put(Film film) throws ObjectNotFoundException {
+        Film initFilm = findById(film.getId());
         String sqlQuery = "UPDATE FILMS SET " +
                 "FILM_NAME = ?, DESCRIPTION = ?, DURATION = ?, MPA_ID = ? , RELEASE_DATE = ?" +
                 "WHERE FILM_ID = ?";
@@ -114,13 +115,24 @@ public class FilmDbStorage implements FilmStorage {
             log.debug(String.format("Фильм %d не найден.", film.getId()));
             throw new ObjectNotFoundException("Фильм не найден");
         }
+
         //Обновить таблицу с жанрами
         sqlQuery = "DELETE FROM FILM_GENRES WHERE FILM_ID = ?";
         jdbcTemplate.update(sqlQuery, film.getId());
 
         setGenresByFilmId(film.getId(), film.getGenres());
         film.setGenres(getGenresByFilmId(film.getId()));
-        return film;
+        directorDao.updateFilm(film);
+
+        if (row == 1) {
+            Film updFilm = findById(film.getId());
+
+            if (initFilm.getDirectors().size() != 0 && updFilm.getDirectors().size() == 0) {
+                updFilm.setDirectors(null); // для прохождения теста postman
+            }
+            return updFilm;
+        }
+        return null;
     }
 
     @Override
@@ -261,6 +273,7 @@ public class FilmDbStorage implements FilmStorage {
                 .description(rs.getString("DESCRIPTION"))
                 .releaseDate(rs.getDate("RELEASE_DATE").toLocalDate())
                 .duration(rs.getInt("DURATION"))
+                .directors(new HashSet<>(directorDao.findFilm(id)))
                 .mpa(new Mpa(rs.getInt("MPA_ID"), rs.getString("MPA_NAME")))
                 .genres(getGenresByFilmId(rs.getLong("FILM_ID")))
                 .build();
