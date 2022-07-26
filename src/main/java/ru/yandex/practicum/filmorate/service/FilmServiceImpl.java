@@ -8,10 +8,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.interfaces.FilmService;
 import ru.yandex.practicum.filmorate.interfaces.FilmStorage;
 import ru.yandex.practicum.filmorate.interfaces.UserStorage;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.service.validator.DirectorValidators;
 import ru.yandex.practicum.filmorate.storage.dao.DirectorDao;
 
@@ -35,7 +32,7 @@ public class FilmServiceImpl implements FilmService {
     private static final String DURATION_IS_POSITIVE = "Продолжительность фильма должна быть больше 0";
     private static final String EARLY_RELEASE_DATE = "Дата релиза не может быть раньше даты 28.12.1895";
 
-    public FilmServiceImpl(@Qualifier("filmDb") FilmStorage filmStorage, UserStorage userStorage, DirectorDao directorStorage) {
+    public FilmServiceImpl(@Qualifier("filmDbStorage") FilmStorage filmStorage, UserStorage userStorage, DirectorDao directorStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.directorStorage = directorStorage;

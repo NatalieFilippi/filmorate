@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.interfaces.FilmStorage;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -19,7 +20,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Slf4j
-@Repository("filmDb")
+@Repository("filmDbStorage")
 public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
@@ -249,6 +250,36 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, this::makeGenre);
     }
 
+    @Override
+    public List<Film> findFilmsOfDirectorSortByYear(int directorId) {
+        String sqlQuery = "SELECT fl.film_id, " +
+                "fl.film_name, " +
+                "fl.description, " +
+                "fl.release_date, " +
+                "fl.duration, " +
+                "fl.mpa_id " +
+                "FROM film_directors AS fd " +
+                "JOIN films fl ON fd.film_id = fl.film_id " +
+                "WHERE fd.id = ? ORDER BY release_date";
+
+        return jdbcTemplate.query(sqlQuery, this::makeFilm, directorId);
+    }
+
+    @Override
+    public List<Film> findFilmsOfDirectorSortByLikes(int directorId) {
+        String sqlQuery = "SELECT fl.film_id, " +
+                "fl.film_name, " +
+                "fl.description, " +
+                "fl.release_date, " +
+                "fl.duration, " +
+                "fl.mpa_id " +
+                "FROM film_directors AS fd " +
+                "JOIN films AS fl ON fd.film_id = fl.film_id " +
+                "WHERE fd.id = ? ORDER BY rate";
+
+        return jdbcTemplate.query(sqlQuery, this::makeFilm, directorId);
+    }
+
     private List<Genre> getGenresByFilmId(Long filmId) {
         final String sqlQueryGenre = "SELECT G.GENRE_ID, G.GENRE_NAME FROM FILM_GENRES FG " +
                 "LEFT JOIN GENRES G ON G.GENRE_ID = FG.GENRE_ID " +
@@ -256,7 +287,7 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQueryGenre, this::makeGenre, filmId);
     }
 
-    private void setGenresByFilmId(Long filmId, List<Genre> genres) {
+    private void setGenresByFilmId(Long filmId, Collection<Genre> genres) {
         if (genres != null && !genres.isEmpty()) {
             for (Genre g : genres) {
                 String sqlQueryGenre = "MERGE INTO FILM_GENRES(FILM_ID, GENRE_ID) VALUES (?, ?)";
@@ -273,7 +304,7 @@ public class FilmDbStorage implements FilmStorage {
                 .description(rs.getString("DESCRIPTION"))
                 .releaseDate(rs.getDate("RELEASE_DATE").toLocalDate())
                 .duration(rs.getInt("DURATION"))
-                .directors(new HashSet<>(directorDao.findFilm(id)))
+                .directors(new HashSet<>(directorDao.findFilm(rs.getLong("FILM_ID"))))
                 .mpa(new Mpa(rs.getInt("MPA_ID"), rs.getString("MPA_NAME")))
                 .genres(getGenresByFilmId(rs.getLong("FILM_ID")))
                 .build();
