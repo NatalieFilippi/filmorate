@@ -8,7 +8,9 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import javax.validation.Valid;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public interface FilmStorage {
 
@@ -29,4 +31,12 @@ public interface FilmStorage {
     Genre findGenreById(long id) throws ObjectNotFoundException;
 
     List<Genre> findAllGenre();
+/*    List<Genre> findFilmGenres(long id);
+    void updateFilmGenres(Film film);
+    void deleteFilmGenres(Film film);
+    void addFilmGenres(Film film);*/
+
+    List<Film> findFilmsOfDirectorSortByYear(int directorId);
+
+    List<Film> findFilmsOfDirectorSortByLikes(int directorId);
 }

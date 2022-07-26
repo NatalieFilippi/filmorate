@@ -1,11 +1,10 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.interfaces.FilmService;
+import ru.yandex.practicum.filmorate.service.FilmServiceImpl;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -13,10 +12,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private final FilmService filmService;
+    private final FilmServiceImpl filmService;
 
-    @Autowired
-    public FilmController(FilmService filmService) {
+    public FilmController(FilmServiceImpl filmService) {
         this.filmService = filmService;
     }
 
@@ -61,6 +59,13 @@ public class FilmController {
             throw new ValidationException("Значение параметра count не может быть отрицательно!");
         }
         return filmService.getPopularFilms(count);
+    }
+
+    //films/director/{directorId}?sortBy=[year,likes]
+    @GetMapping("/director/{directorId}")
+    public List<Film> findFilmsDirectorSort(@PathVariable int directorId,
+                                                  @RequestParam String sortBy) throws ObjectNotFoundException {
+        return filmService.findFilmsDirectorSort(directorId, sortBy);
     }
 
     //метод для тестов
