@@ -15,6 +15,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,12 +24,11 @@ import java.util.List;
 @Slf4j
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final FeedStorage feedStorage;
+
 
     @Autowired
-    public UserDbStorage(JdbcTemplate jdbcTemplate, FeedStorage feedStorage) {
+    public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.feedStorage = feedStorage;
     }
 
     @Override

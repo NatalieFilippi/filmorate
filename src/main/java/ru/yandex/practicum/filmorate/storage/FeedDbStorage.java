@@ -11,7 +11,6 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,7 +35,7 @@ public class FeedDbStorage implements FeedStorage {
     }
 
     @Override
-    public void eventRegistration(Event event) throws SQLException {
+    public void addEvent(Event event) {
         final String sqlQuery = "insert into FEED(USER_ID,EVENT_TYPE,OPERATION,ENTITY_ID,TIME_STAMP) " +
                 "values (?, ?, ?, ?, ?)";
         int row = jdbcTemplate.update(sqlQuery
@@ -45,10 +44,6 @@ public class FeedDbStorage implements FeedStorage {
                 , event.getOperation()
                 , event.getEntityId()
                 , event.getTimeStamp());
-        if (row == 0) {
-            log.debug(String.format("Не удалось зарегистрировать событие пользователя", event.getUserId()));
-            throw new SQLException("Не удалось зарегистрировать событие.");
-        }
     }
 
     public static Event makeEvent(ResultSet rs, int rowNum) throws SQLException {
