@@ -13,6 +13,8 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import javax.validation.Valid;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
@@ -135,4 +137,15 @@ public class InMemoryFilmStorage implements FilmStorage {
     private long getNextId() {
         return ++lastFilmId;
     }
+
+    @Override
+    public List<Film> getUserFilms(long userId) {
+        return null;
+    }
+
+    @Override
+    public Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
+        return null;
+    }
+
 }

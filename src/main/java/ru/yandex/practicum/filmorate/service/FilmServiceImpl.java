@@ -14,6 +14,8 @@ import ru.yandex.practicum.filmorate.storage.dao.DirectorDao;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -204,4 +206,16 @@ public class FilmServiceImpl implements FilmService {
         }
         return message;
     }
+
+    public Optional<List<Film>> findCommonFilms(long userId, long friendId) throws ObjectNotFoundException {
+        if (userStorage.findById(userId) != null &&
+                userStorage.findById(friendId) != null) {
+            return Optional.of(filmStorage.getUserFilms(userId)
+                    .stream()
+                    .filter(filmStorage.getUserFilms(friendId)::contains)
+                    .collect(Collectors.toList()));
+        }
+        return Optional.empty();
+    }
+
 }

@@ -8,6 +8,8 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import javax.validation.Valid;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -35,4 +37,9 @@ public interface FilmStorage {
     List<Film> findFilmsOfDirectorSortByYear(int directorId);
 
     List<Film> findFilmsOfDirectorSortByLikes(int directorId);
+
+    List<Film> getUserFilms(long userId);
+
+    Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException;
+
 }

@@ -325,4 +325,26 @@ public class FilmDbStorage implements FilmStorage {
     public static Mpa makeMpa(ResultSet rs, int rowNum) throws SQLException {
         return new Mpa(rs.getInt("MPA_ID"), rs.getString("MPA_NAME"));
     }
+
+    public List<Film> getUserFilms(long userId) {
+        List<Film> userFilms = jdbcTemplate.query("SELECT * FROM films WHERE film_id IN " +
+                        "(SELECT film_id FROM films_likes WHERE user_id = ?) ORDER BY likes_count DESC",
+                this::mapRowToFilm, userId);
+        for (Film film : userFilms) {
+            setGenre(film);
+        }
+        return userFilms;
+    }
+
+    public Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
+
+        return Film.builder()
+                .id(resultSet.getLong("film_id"))
+                .name(resultSet.getString("name"))
+                .description(resultSet.getString("description"))
+                .duration(resultSet.getInt("duration"))
+                .releaseDate(resultSet.getDate("release_date").toLocalDate())
+                .build();
+    }
+
 }

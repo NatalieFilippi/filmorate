@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -73,5 +75,12 @@ public class FilmController {
     public void deleteAll() {
         filmService.deleteAll();
     }
+
+    @GetMapping("/common")
+    public ResponseEntity<List<Film>> findCommonFilms(@RequestParam long userId, @RequestParam long friendId) throws ObjectNotFoundException {
+        return filmService.findCommonFilms(userId, friendId).map(film -> new ResponseEntity<>(film, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(null, HttpStatus.NOT_FOUND));
+    }
+
 
 }
