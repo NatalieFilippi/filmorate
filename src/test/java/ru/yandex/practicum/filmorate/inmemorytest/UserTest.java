@@ -28,7 +28,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class UserTest {
     FeedStorage feedStorage;
     private UserController userController = new UserController(
-            new UserServiceImpl(new InMemoryFilmStorage(), new InMemoryUserStorage(), new FeedDbStorage(new JdbcTemplate())), new FeedServiceImpl());
+            new UserServiceImpl(new InMemoryFilmStorage(), new InMemoryUserStorage(), new FeedDbStorage(new JdbcTemplate())),
+            new FeedServiceImpl(new FeedDbStorage(new JdbcTemplate())));
 
     @AfterEach
     private void afterEach() {

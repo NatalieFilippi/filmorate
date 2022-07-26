@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,14 +37,14 @@ public class FeedDbStorage implements FeedStorage {
 
     @Override
     public void addEvent(Event event) {
-        final String sqlQuery = "insert into FEED(USER_ID,EVENT_TYPE,OPERATION,ENTITY_ID,TIME_STAMP) " +
+        final String sqlQuery = "insert into FEED(USER_ID,EVENT_TYPE,OPERATION,ENTITY_ID,TIMESTAMP) " +
                 "values (?, ?, ?, ?, ?)";
         int row = jdbcTemplate.update(sqlQuery
                 , event.getUserId()
                 , event.getEventType()
                 , event.getOperation()
                 , event.getEntityId()
-                , event.getTimeStamp());
+                , event.getTimestamp());
     }
 
     public static Event makeEvent(ResultSet rs, int rowNum) throws SQLException {
@@ -52,6 +53,6 @@ public class FeedDbStorage implements FeedStorage {
                 rs.getString("EVENT_TYPE"),
                 rs.getString("OPERATION"),
                 rs.getInt("ENTITY_ID"),
-                rs.getTimestamp("TIME_STAMP").toLocalDateTime());
+                rs.getLong("TIMESTAMP"));
     }
 }

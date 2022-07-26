@@ -12,6 +12,8 @@ import ru.yandex.practicum.filmorate.interfaces.UserStorage;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -96,7 +98,7 @@ public class UserServiceImpl implements UserService {
                 .userId(userId)
                 .eventType("FRIEND")
                 .operation("ADD")
-                .timeStamp(LocalDateTime.now())
+                .timestamp(new Timestamp(System.currentTimeMillis()).getTime())
                 .entityId(friendId)
                 .build());
         return user;
@@ -120,7 +122,7 @@ public class UserServiceImpl implements UserService {
                     .userId(userId)
                     .eventType("FRIEND")
                     .operation("REMOVE")
-                    .timeStamp(LocalDateTime.now())
+                    .timestamp(new Timestamp(System.currentTimeMillis()).getTime())
                     .entityId(friendId)
                     .build());
             return user;

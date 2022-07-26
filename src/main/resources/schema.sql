@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS FEED (
                                     event_type VARCHAR,
                                     operation VARCHAR,
                                     entity_id INT,
-                                    time_stamp TIMESTAMP
+                                    timestamp BIGINT
 );
 
 
