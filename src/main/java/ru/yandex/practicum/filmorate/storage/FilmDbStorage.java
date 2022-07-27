@@ -227,20 +227,12 @@ public class FilmDbStorage implements FilmStorage {
                 "FROM FILMS AS f " +
                 "WHERE UPPER(f.FILM_NAME) LIKE UPPER('%" + query + "%')";
 
-        for (String s : searchOptions) {
-            if (searchOptions.size() > 2) throw new ValidationException("Превышено количество задаваемых параметров поиска!");
+        for (int i = 0; i < searchOptions.size(); i++) {
+            String s = searchOptions.get(i);
+            if (s.equals("director")) sb.append(searchByDirector);
+            if (s.equals("title")) sb.append(searchByFilmName);
+            if (!(i == searchOptions.size() - 1)) sb.append(" UNION ");
 
-            if (s.equals("director")) {
-                sb.append(searchByDirector);
-            }
-
-            if (s.equals("title")) {
-                sb.append(searchByFilmName);
-            }
-
-            if (searchOptions.size() > 1) {
-                sb.append(" UNION ");
-            }
         }
 
         String sortedResult =
