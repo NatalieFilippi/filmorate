@@ -66,3 +66,13 @@ CREATE TABLE IF NOT EXISTS REVIEWS (
                                    film_id INT REFERENCES FILMS(film_id) ON DELETE CASCADE,
                                    useful INT
 );
+CREATE TABLE IF NOT EXISTS FEED (
+                                    event_id INT PRIMARY KEY AUTO_INCREMENT,
+                                    user_id INT REFERENCES USERS(user_id) ON DELETE CASCADE,
+                                    event_type VARCHAR,
+                                    operation VARCHAR,
+                                    entity_id INT,
+                                    timestamp BIGINT
+);
+
+

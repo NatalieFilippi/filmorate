@@ -6,9 +6,10 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
-
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
+
 
 public interface FilmService {
     List<Film> findAll();
@@ -17,7 +18,7 @@ public interface FilmService {
     Film put(Film film) throws ValidationException, ObjectNotFoundException;
     Film addLike(long filmId, long userId) throws ObjectNotFoundException;
     Film deleteLike(long filmId, long userId) throws ObjectNotFoundException;
-    List<Film> getPopularFilms(int count);
+    List<Film> getPopularFilms(int count, Map<String, String> params);
     void deleteAll();
     void delete(long id) throws ValidationException, ObjectNotFoundException;
     Mpa findMpaById(long id) throws ObjectNotFoundException;
