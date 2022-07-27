@@ -17,7 +17,9 @@ import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -128,7 +130,7 @@ public class FilmDBTest {
 
     @Test
     public void testGetPopularFilms() {
-        List<Film> films = filmStorage.getPopularFilms(1);
+        List<Film> films = filmStorage.getPopularFilms(1, new HashMap<>());
         assertEquals(films.size(), 1);
     }
 
