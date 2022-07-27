@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/films")
@@ -78,5 +79,12 @@ public class FilmController {
     public void deleteAll() {
         filmService.deleteAll();
     }
+
+    @GetMapping("/common")
+    public Optional<List<Film>> findCommonFilms(@RequestParam long userId, @RequestParam long friendId) throws ObjectNotFoundException {
+        return filmService.findCommonFilms(userId, friendId); //userService.getCommonFriends(id, otherId);
+    }
+
+
 
 }
