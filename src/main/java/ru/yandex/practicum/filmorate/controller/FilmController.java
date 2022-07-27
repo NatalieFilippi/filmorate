@@ -80,10 +80,15 @@ public class FilmController {
                 .orElseGet(() -> new ResponseEntity<>(null, HttpStatus.NOT_FOUND));
     }*/
 
-    @GetMapping("/{userId}/films/common/{friendId}")
+    /*@GetMapping("/{userId}/films/common/{friendId}")
     public Optional<List<Film>> findCommonFilms(@PathVariable("userId") long userId, @PathVariable("friendId") long friendId) throws ObjectNotFoundException {
         return filmService.findCommonFilms(userId, friendId); //userService.getCommonFriends(id, otherId);
-    }
+    }*/
 
+
+    @GetMapping("/common")
+    public Optional<List<Film>> findCommonFilms(@RequestParam long userId, @RequestParam long friendId) throws ObjectNotFoundException {
+        return filmService.findCommonFilms(userId, friendId); //userService.getCommonFriends(id, otherId);
+    }
 
 }

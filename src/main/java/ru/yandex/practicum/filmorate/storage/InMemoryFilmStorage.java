@@ -143,9 +143,9 @@ public class InMemoryFilmStorage implements FilmStorage {
         return null;
     }
 
-    @Override
+   /* @Override
     public Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
         return null;
-    }
+    }*/
 
 }

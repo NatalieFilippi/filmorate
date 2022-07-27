@@ -40,6 +40,6 @@ public interface FilmStorage {
 
     List<Film> getUserFilms(long userId);
 
-    Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException;
+    //Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException;
 
 }
