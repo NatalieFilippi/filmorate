@@ -136,6 +136,10 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> search(String query, List<String> searchOptions) {
+        if (searchOptions.size() > 2) {
+            throw new ValidationException("Превышено количество задаваемых параметров поиска!");
+        }
+
         if (searchOptions.size() > new HashSet<>(searchOptions).size()) {
             throw new ValidationException("В строке запроса есть повторяющиеся опции поиска!");
         }
