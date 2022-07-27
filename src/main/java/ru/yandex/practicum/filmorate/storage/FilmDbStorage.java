@@ -8,7 +8,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.interfaces.FeedStorage;
 import ru.yandex.practicum.filmorate.interfaces.FilmStorage;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -18,6 +20,9 @@ import java.sql.*;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @Repository("filmDbStorage")

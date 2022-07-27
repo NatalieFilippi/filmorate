@@ -40,7 +40,7 @@ public class FilmController {
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public Film addLike(@PathVariable("id") long id, @PathVariable("userId") long userId) throws ObjectNotFoundException {
+    public Film addLike(@PathVariable("id") long id, @PathVariable("userId") long userId) throws ObjectNotFoundException{
         return filmService.addLike(id,userId);
     }
 

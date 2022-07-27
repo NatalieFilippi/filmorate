@@ -5,14 +5,19 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.interfaces.FeedStorage;
 import ru.yandex.practicum.filmorate.interfaces.FilmService;
 import ru.yandex.practicum.filmorate.interfaces.FilmStorage;
 import ru.yandex.practicum.filmorate.interfaces.UserStorage;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.service.validator.DirectorValidators;
 import ru.yandex.practicum.filmorate.storage.dao.DirectorDao;
+import ru.yandex.practicum.filmorate.model.*;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +29,7 @@ public class FilmServiceImpl implements FilmService {
 
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final FeedStorage feedStorage;
     private final DirectorDao directorStorage;
     private final static LocalDate DATE_BORN_MOVIE = LocalDate.of(1895, Month.DECEMBER, 28);
     private static final String NO_DATA_FOUND = "Данные о фильме не заполнены.";
@@ -32,10 +38,11 @@ public class FilmServiceImpl implements FilmService {
     private static final String DURATION_IS_POSITIVE = "Продолжительность фильма должна быть больше 0";
     private static final String EARLY_RELEASE_DATE = "Дата релиза не может быть раньше даты 28.12.1895";
 
-    public FilmServiceImpl(@Qualifier("filmDbStorage") FilmStorage filmStorage, UserStorage userStorage, DirectorDao directorStorage) {
+    public FilmServiceImpl(@Qualifier("filmDbStorage") FilmStorage filmStorage, UserStorage userStorage, DirectorDao directorStorage, FeedStorage feedStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.directorStorage = directorStorage;
+        this.feedStorage = feedStorage;
     }
 
     @Override
@@ -85,6 +92,13 @@ public class FilmServiceImpl implements FilmService {
         if (filmStorage.addLike(filmId, userId)) {
             log.debug(String.format("Пользователь %d лайкнул фильм %d",
                                     user.getId(), film.getId()));
+            feedStorage.addEvent(Event.builder()
+                    .userId(userId)
+                    .eventType("LIKE")
+                    .operation("ADD")
+                    .timestamp(new Timestamp(System.currentTimeMillis()).getTime())
+                    .entityId(filmId)
+                    .build());
         };
         return film;
     }
@@ -104,6 +118,13 @@ public class FilmServiceImpl implements FilmService {
         filmStorage.deleteLike(filmId, userId);
         log.debug(String.format("Пользователь %d удалил лайк у фильма %d",
                                 user.getId(), film.getId()));
+        feedStorage.addEvent(Event.builder()
+                .userId(userId)
+                .eventType("LIKE")
+                .operation("REMOVE")
+                .timestamp(new Timestamp(System.currentTimeMillis()).getTime())
+                .entityId(filmId)
+                .build());
         return film;
     }
 
