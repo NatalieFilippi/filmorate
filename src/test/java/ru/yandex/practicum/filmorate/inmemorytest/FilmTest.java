@@ -28,13 +28,14 @@ public class FilmTest {
 
     private FilmController filmController = new FilmController(
             new FilmServiceImpl(new InMemoryFilmStorage(),
-                                new InMemoryUserStorage(),
-                                new DirectorDao(new JdbcTemplate()),
-                                new FeedDbStorage(new JdbcTemplate())));
+                    new InMemoryUserStorage(),
+                    new DirectorDao(new JdbcTemplate()),
+                    new FeedDbStorage(new JdbcTemplate())));
     private UserController userController = new UserController(
-            new UserServiceImpl(new InMemoryUserStorage(),
-                                new FeedDbStorage(new JdbcTemplate())),
-                                new FeedServiceImpl(new FeedDbStorage(new JdbcTemplate())));
+            new UserServiceImpl(new InMemoryFilmStorage(),
+                    new InMemoryUserStorage(),
+                    new FeedDbStorage(new JdbcTemplate())),
+            new FeedServiceImpl(new FeedDbStorage(new JdbcTemplate())));
 
     @AfterEach
     private void afterEach() {

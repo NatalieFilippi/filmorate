@@ -22,7 +22,7 @@ import java.util.*;
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
-
+    private final FilmStorage filmStorage;
     private final UserStorage userStorage;
     private final FeedStorage feedStorage;
     private static final String NO_DATA_FOUND = "Данные о пользователе не заполнены.";
@@ -31,8 +31,8 @@ public class UserServiceImpl implements UserService {
     private static final String EMPTY_LOGIN = "Логин не может быть пустым и содержать пробелы.";
     private static final String BIRTHDAY_IN_THE_FUTURE = "Дата рождения не может быть в будущем.";
 
-    @Autowired
-    public UserServiceImpl(UserStorage userStorage, FeedStorage feedStorage) {
+    public UserServiceImpl(@Qualifier("filmDbStorage") FilmStorage filmStorage, UserStorage userStorage, FeedStorage feedStorage) {
+        this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.feedStorage = feedStorage;
     }
