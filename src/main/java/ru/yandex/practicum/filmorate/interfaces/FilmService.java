@@ -13,17 +13,31 @@ import java.util.Optional;
 
 public interface FilmService {
     List<Film> findAll();
+
     Film findById(long id) throws ObjectNotFoundException;
+
     Film create(Film film) throws ValidationException;
+
     Film put(Film film) throws ValidationException, ObjectNotFoundException;
+
     Film addLike(long filmId, long userId) throws ObjectNotFoundException;
+
     Film deleteLike(long filmId, long userId) throws ObjectNotFoundException;
+
     List<Film> getPopularFilms(int count, Map<String, String> params);
+
+    List<Film> search(String query, List<String> searchOptions);
+
     void deleteAll();
+
     void delete(long id) throws ValidationException, ObjectNotFoundException;
+
     Mpa findMpaById(long id) throws ObjectNotFoundException;
+
     List<Mpa> findAllMpa();
+
     Genre findGenreById(long id) throws ObjectNotFoundException;
+
     List<Genre> findAllGenre();
 
     List<Film> findFilmsDirectorSort(int directorId, String sortBy);

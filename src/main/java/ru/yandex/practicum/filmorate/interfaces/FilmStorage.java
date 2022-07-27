@@ -23,6 +23,8 @@ public interface FilmStorage {
     boolean deleteLike(long filmId, long userId);
     List<Film> getPopularFilms(int count, Map<String, String> params);
 
+    List<Film> search(String query, List<String> searchOptions);
+
     Mpa findMpaById(long id) throws ObjectNotFoundException;
 
     List<Mpa> findAllMpa();
@@ -36,5 +38,4 @@ public interface FilmStorage {
     List<Film> findFilmsOfDirectorSortByLikes(int directorId);
 
     List<Film> getUserFilms(long userId);
-
 }
