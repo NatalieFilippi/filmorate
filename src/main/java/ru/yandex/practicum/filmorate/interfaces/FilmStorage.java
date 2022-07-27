@@ -34,4 +34,7 @@ public interface FilmStorage {
     List<Film> findFilmsOfDirectorSortByYear(int directorId);
 
     List<Film> findFilmsOfDirectorSortByLikes(int directorId);
+
+    List<Film> getUserFilms(long userId);
+
 }

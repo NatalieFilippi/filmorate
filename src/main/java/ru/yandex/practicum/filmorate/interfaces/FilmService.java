@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface FilmService {
     List<Film> findAll();
@@ -36,4 +37,6 @@ public interface FilmService {
     Director updateDirector(Director director);
 
     void deleteDirector(int directorId);
+
+    Optional<List<Film>> findCommonFilms(long userId, long friendId) throws ObjectNotFoundException;
 }
