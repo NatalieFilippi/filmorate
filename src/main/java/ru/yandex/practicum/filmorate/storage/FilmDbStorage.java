@@ -8,21 +8,17 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.interfaces.FeedStorage;
 import ru.yandex.practicum.filmorate.interfaces.FilmStorage;
-import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.dao.DirectorDao;
 
-import java.sql.*;
 import java.sql.Date;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.*;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository("filmDbStorage")
@@ -214,6 +210,52 @@ public class FilmDbStorage implements FilmStorage {
                         "LIMIT ?";
 
         return jdbcTemplate.query(sqlQuery, this::makeFilm, values.toArray(new Object[0]));
+    }
+
+    @Override
+    public List<Film> search(String query, List<String> searchOptions) {
+        StringBuilder sb = new StringBuilder();
+        String searchByDirector =
+                "SELECT f.FILM_ID " +
+                "FROM FILMS AS f " +
+                "JOIN FILM_DIRECTORS AS fd ON f.FILM_ID = FD.FILM_ID " +
+                "JOIN DIRECTORS AS dir ON dir.ID = FD.ID " +
+                "WHERE UPPER(dir.DIRECTOR_NAME) LIKE UPPER('%" + query + "%')";
+
+        String searchByFilmName =
+                "SELECT f.FILM_ID " +
+                "FROM FILMS AS f " +
+                "WHERE UPPER(f.FILM_NAME) LIKE UPPER('%" + query + "%')";
+
+        for (String s : searchOptions) {
+            if (searchOptions.size() > 2) throw new ValidationException("Превышено количество задаваемых параметров поиска!");
+
+            if (s.equals("director")) {
+                sb.append(searchByDirector);
+            }
+
+            if (s.equals("title")) {
+                sb.append(searchByFilmName);
+            }
+
+            if (searchOptions.size() > 1) {
+                sb.append(" UNION ");
+            }
+        }
+
+        String sortedResult =
+                "SELECT found.FILM_ID " +
+                "FROM " +
+                "("+ sb +") AS found " +
+                "LEFT OUTER JOIN LIKES AS l ON l.FILM_ID = found.FILM_ID " +
+                "GROUP BY found.FILM_ID " +
+                "ORDER BY COUNT(l.USER_ID) DESC";
+
+        return jdbcTemplate.queryForList(sortedResult, Long.class)
+                .stream()
+                .map(this::findById)
+                .collect(Collectors.toList());
+
     }
 
     @Override

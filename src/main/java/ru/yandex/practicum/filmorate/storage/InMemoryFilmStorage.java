@@ -86,6 +86,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> search(String query, List<String> searchOptions) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public Mpa findMpaById(long id) throws ObjectNotFoundException {
         return null;
     }

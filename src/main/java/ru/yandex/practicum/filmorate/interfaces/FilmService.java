@@ -18,6 +18,8 @@ public interface FilmService {
     Film addLike(long filmId, long userId) throws ObjectNotFoundException;
     Film deleteLike(long filmId, long userId) throws ObjectNotFoundException;
     List<Film> getPopularFilms(int count, Map<String, String> params);
+
+    List<Film> search(String query, List<String> searchOptions);
     void deleteAll();
     void delete(long id) throws ValidationException, ObjectNotFoundException;
     Mpa findMpaById(long id) throws ObjectNotFoundException;
@@ -36,4 +38,5 @@ public interface FilmService {
     Director updateDirector(Director director);
 
     void deleteDirector(int directorId);
+
 }

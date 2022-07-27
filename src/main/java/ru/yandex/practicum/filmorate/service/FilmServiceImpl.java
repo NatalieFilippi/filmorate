@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -131,6 +132,15 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public List<Film> getPopularFilms(int count, Map<String, String> params) {
         return filmStorage.getPopularFilms(count, params);
+    }
+
+    @Override
+    public List<Film> search(String query, List<String> searchOptions) {
+        if (searchOptions.size() > new HashSet<>(searchOptions).size()) {
+            throw new ValidationException("В строке запроса есть повторяющиеся опции поиска!");
+        }
+
+        return filmStorage.search(query, searchOptions);
     }
 
     @Override
