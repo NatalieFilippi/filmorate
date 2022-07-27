@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.interfaces;
 
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;

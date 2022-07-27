@@ -6,11 +6,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.interfaces.FeedStorage;
 import ru.yandex.practicum.filmorate.interfaces.FilmStorage;
 import ru.yandex.practicum.filmorate.interfaces.UserStorage;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -20,20 +25,30 @@ public class ReviewService {
     private final ReviewStorage reviewStorage;
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
+    private final FeedStorage feedStorage;
 
     // Сообщаем Spring, что нужно передать в конструктор объект класса ReviewStorage
     @Autowired
     public ReviewService(@Qualifier("reviewDbStorage") ReviewStorage reviewStorage,
                          @Qualifier("userDbStorage") UserStorage userStorage,
-                         @Qualifier("filmDbStorage") FilmStorage filmStorage) {
+                         @Qualifier("filmDbStorage") FilmStorage filmStorage, FeedStorage feedStorage) {
         this.reviewStorage = reviewStorage;
         this.userStorage = userStorage;
         this.filmStorage = filmStorage;
+        this.feedStorage = feedStorage;
     }
 
     public Review create(Review review) throws ObjectNotFoundException {
         validationReview(review);
-        return reviewStorage.create(review);
+        Review reviewOut = reviewStorage.create(review);
+        feedStorage.addEvent(Event.builder()
+                .userId(reviewOut.getUserId())
+                .eventType("REVIEW")
+                .operation("ADD")
+                .timestamp(new Timestamp(System.currentTimeMillis()).getTime())
+                .entityId(reviewOut.getReviewId())
+                .build());
+        return reviewOut;
     }
 
     public Review getById(int reviewId) throws ObjectNotFoundException {
@@ -46,10 +61,27 @@ public class ReviewService {
 
     public Review update(Review review) throws ObjectNotFoundException {
         validationReview(review);
-        return reviewStorage.update(review);
+        reviewStorage.update(review);
+        Review reviewOut = getById(review.getReviewId());
+        feedStorage.addEvent(Event.builder()
+                .userId(reviewOut.getUserId())
+                .eventType("REVIEW")
+                .operation("UPDATE")
+                .timestamp(new Timestamp(System.currentTimeMillis()).getTime())
+                .entityId(reviewOut.getReviewId())
+                .build());
+        return reviewOut;
     }
 
     public void deleteById(int reviewId) throws ObjectNotFoundException {
+        Review review = reviewStorage.getById(reviewId);
+        feedStorage.addEvent(Event.builder()
+                .userId(review.getUserId())
+                .eventType("REVIEW")
+                .operation("REMOVE")
+                .timestamp(new Timestamp(System.currentTimeMillis()).getTime())
+                .entityId(review.getReviewId())
+                .build());
         reviewStorage.deleteById(reviewId);
     }
 

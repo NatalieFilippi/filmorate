@@ -5,12 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.interfaces.FeedStorage;
 import ru.yandex.practicum.filmorate.interfaces.FilmStorage;
 import ru.yandex.practicum.filmorate.interfaces.UserService;
 import ru.yandex.practicum.filmorate.interfaces.UserStorage;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -18,6 +23,7 @@ import java.util.*;
 public class UserServiceImpl implements UserService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final FeedStorage feedStorage;
     private static final String NO_DATA_FOUND = "Данные о пользователе не заполнены.";
     private static final String EMPTY_EMAIL = "Адрес электронной почты не может быть пустым.";
     private static final String INVALID_EMAIL = "Адрес электронной почты должен содержать символ \"@\".";
@@ -25,9 +31,10 @@ public class UserServiceImpl implements UserService {
     private static final String BIRTHDAY_IN_THE_FUTURE = "Дата рождения не может быть в будущем.";
 
     @Autowired
-    public UserServiceImpl(FilmStorage filmStorage, UserStorage userStorage) {
+    public UserServiceImpl(FilmStorage filmStorage, UserStorage userStorage, FeedStorage feedStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+        this.feedStorage = feedStorage;
     }
 
     @Override
@@ -87,6 +94,13 @@ public class UserServiceImpl implements UserService {
         }
         userStorage.addFriend(userId, friendId);
         log.debug(String.format("Пользователь %d добавил в друзья пользователя %d", userId, friendId));
+        feedStorage.addEvent(Event.builder()
+                .userId(userId)
+                .eventType("FRIEND")
+                .operation("ADD")
+                .timestamp(new Timestamp(System.currentTimeMillis()).getTime())
+                .entityId(friendId)
+                .build());
         return user;
     }
 
@@ -104,6 +118,13 @@ public class UserServiceImpl implements UserService {
         }
         if (userStorage.deleteFriend(userId, friendId)) {
             log.debug(String.format("Пользователь %d удалил из друзей пользователя %d", userId, friendId));
+            feedStorage.addEvent(Event.builder()
+                    .userId(userId)
+                    .eventType("FRIEND")
+                    .operation("REMOVE")
+                    .timestamp(new Timestamp(System.currentTimeMillis()).getTime())
+                    .entityId(friendId)
+                    .build());
             return user;
         } else {
             return null;

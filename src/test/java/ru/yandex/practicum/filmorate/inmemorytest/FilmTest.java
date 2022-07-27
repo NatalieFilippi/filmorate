@@ -3,14 +3,16 @@ package ru.yandex.practicum.filmorate.inmemorytest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FeedServiceImpl;
 import ru.yandex.practicum.filmorate.service.FilmServiceImpl;
 import ru.yandex.practicum.filmorate.service.UserServiceImpl;
+import ru.yandex.practicum.filmorate.storage.FeedDbStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.dao.DirectorDao;
@@ -25,10 +27,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class FilmTest {
 
     private FilmController filmController = new FilmController(
-            new FilmServiceImpl(new InMemoryFilmStorage(), new InMemoryUserStorage(), null));
-
+            new FilmServiceImpl(new InMemoryFilmStorage(),
+                                new InMemoryUserStorage(),
+                                new DirectorDao(new JdbcTemplate()),
+                                new FeedDbStorage(new JdbcTemplate())));
     private UserController userController = new UserController(
-            new UserServiceImpl(new InMemoryFilmStorage(), new InMemoryUserStorage()));
+            new UserServiceImpl(new InMemoryFilmStorage(),
+                                new InMemoryUserStorage(),
+                                new FeedDbStorage(new JdbcTemplate())),
+                                new FeedServiceImpl(new FeedDbStorage(new JdbcTemplate())));
 
     @AfterEach
     private void afterEach() {
