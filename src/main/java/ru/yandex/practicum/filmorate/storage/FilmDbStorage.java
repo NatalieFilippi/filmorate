@@ -299,14 +299,10 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> findFilmsOfDirectorSortByYear(int directorId) {
-        String sqlQuery = "SELECT fl.film_id, " +
-                "fl.film_name, " +
-                "fl.description, " +
-                "fl.release_date, " +
-                "fl.duration, " +
-                "fl.mpa_id " +
+        String sqlQuery = "SELECT *" +
                 "FROM film_directors AS fd " +
                 "JOIN films fl ON fd.film_id = fl.film_id " +
+                "JOIN MPA m ON m.MPA_ID = fl.MPA_ID " +
                 "WHERE fd.id = ? ORDER BY release_date";
 
         return jdbcTemplate.query(sqlQuery, this::makeFilm, directorId);
@@ -314,14 +310,10 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> findFilmsOfDirectorSortByLikes(int directorId) {
-        String sqlQuery = "SELECT fl.film_id, " +
-                "fl.film_name, " +
-                "fl.description, " +
-                "fl.release_date, " +
-                "fl.duration, " +
-                "fl.mpa_id " +
+        String sqlQuery = "SELECT * " +
                 "FROM film_directors AS fd " +
                 "JOIN films AS fl ON fd.film_id = fl.film_id " +
+                "JOIN MPA m ON m.MPA_ID = fl.MPA_ID " +
                 "WHERE fd.id = ? ORDER BY rate";
 
         return jdbcTemplate.query(sqlQuery, this::makeFilm, directorId);
