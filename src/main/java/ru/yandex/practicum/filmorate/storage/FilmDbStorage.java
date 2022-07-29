@@ -169,7 +169,7 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> getPopularFilms(int count, Map<String, String> params) {
         StringBuilder sb = new StringBuilder();
         List<String> conditions = new ArrayList<>();
-        List<Object> values = new ArrayList<>();
+        List<String> values = new ArrayList<>();
 
         if (!(params.containsKey("count") && params.keySet().size() == 1) && params.keySet().size() > 0) {
             sb.append("WHERE ");
@@ -193,7 +193,7 @@ public class FilmDbStorage implements FilmStorage {
                 sb.append("AND ");
             }
         }
-        values.add(count);
+        values.add(String.valueOf(count));
 
         final String sqlQuery =
                 "SELECT " +
