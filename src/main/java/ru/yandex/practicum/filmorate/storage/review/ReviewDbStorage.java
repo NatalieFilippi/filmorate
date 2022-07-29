@@ -4,8 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
+import ru.yandex.practicum.filmorate.exception.LikeAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.interfaces.UserStorage;
 import ru.yandex.practicum.filmorate.model.Review;
@@ -24,8 +25,9 @@ public class ReviewDbStorage implements ReviewStorage {
     private static final String SQL_GET_REVIEW_BY_ID = "SELECT * FROM REVIEWS WHERE REVIEW_ID=?";
     private static final String SQL_GET_ALL_REVIEW = "SELECT * FROM REVIEWS";
     private static final String SQL_DELETE_REVIEW = "DELETE FROM REVIEWS WHERE REVIEW_ID=?";
-    private static final String SQL_GET_REVIEWS_FOR_FILM = "SELECT * FROM REVIEWS WHERE FILM_ID=? LIMIT ?";
+    private static final String SQL_GET_REVIEWS_FOR_FILM = "SELECT * FROM REVIEWS WHERE FILM_ID=? ORDER BY useful DESC LIMIT ?";
     private static final String SQL_UPDATE_USEFUL = "UPDATE REVIEWS SET USEFUL=? WHERE REVIEW_ID=?";
+    private static final String SQL_GET_REVIEW = "SELECT * FROM REVIEWS_USERS WHERE review_id=? AND user_id=?";
 
     private final JdbcTemplate jdbcTemplate;
     private final UserStorage userStorage;
@@ -82,10 +84,10 @@ public class ReviewDbStorage implements ReviewStorage {
     public Review update(Review review) throws ObjectNotFoundException {
         if (review.getReviewId() == null) {
             log.debug("В storage не содержится отзыв с ID: {}", review.getReviewId());
-            throw new DataNotFoundException("В storage не содержится отзыв");
+            throw new ObjectNotFoundException("В storage не содержится отзыв");
         } else if (getById(review.getReviewId()) == null) {
             log.debug("В storage не содержится отзыв с ID: {}", review.getReviewId());
-            throw new DataNotFoundException("В storage не содержится отзыв");
+            throw new ObjectNotFoundException("В storage не содержится отзыв");
         }
         jdbcTemplate.update(SQL_UPDATE_REVIEW,
                 review.getContent(),
@@ -118,8 +120,37 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public void updateLike(int useful, Integer reviewId) {
-        jdbcTemplate.update(SQL_UPDATE_USEFUL, useful, reviewId);
+    public void addLike(Integer reviewId, Long userId) {
+        SqlRowSet review = jdbcTemplate.queryForRowSet(SQL_GET_REVIEW, reviewId, userId);
+        if (review.next()) {
+            log.debug("Пользователь с ID: {} уже добавил лайк отзыву с ID: {}", userId, reviewId);
+            throw new LikeAlreadyExistsException("Невозможно добавить более 1 лайка для отзыва от пользователя");
+        }
+        jdbcTemplate.update(SQL_UPDATE_USEFUL, getById(reviewId).getUseful() + 1, reviewId);
+        jdbcTemplate.update("UPDATE REVIEWS_USERS SET  review_id= ?, user_id = ?, is_like = ?;", reviewId, userId, true);
+    }
+
+    @Override
+    public void addDislike(Integer reviewId, Long userId) {
+        SqlRowSet review = jdbcTemplate.queryForRowSet(SQL_GET_REVIEW, reviewId, userId);
+        if (review.next()) {
+            log.debug("Пользователь с ID: {} уже добавил дизлайк отзыву с ID: {}", userId, reviewId);
+            throw new LikeAlreadyExistsException("Невозможно добавить более 1 дизлайка для отзыва от пользователя");
+        }
+        jdbcTemplate.update(SQL_UPDATE_USEFUL, getById(reviewId).getUseful() - 1, reviewId);
+        jdbcTemplate.update("UPDATE reviews_users SET  review_id= ?, user_id = ?, is_like = ?;", reviewId, userId, false);
+    }
+
+    @Override
+    public void removeLike(Integer reviewId, Long userId) {
+        jdbcTemplate.update(SQL_UPDATE_USEFUL, getById(reviewId).getUseful() - 1, reviewId);
+        jdbcTemplate.update("DELETE FROM reviews_users WHERE review_id = ? AND user_id = ? AND is_like = ?", reviewId, userId, true);
+    }
+
+    @Override
+    public void removeDislike(Integer reviewId, Long userId) {
+        jdbcTemplate.update(SQL_UPDATE_USEFUL, getById(reviewId).getUseful() + 1, reviewId);
+        jdbcTemplate.update("DELETE FROM reviews_users WHERE review_id = ? AND user_id = ? AND is_like = ?", reviewId, userId, false);
     }
 
     /**
@@ -132,7 +163,7 @@ public class ReviewDbStorage implements ReviewStorage {
     private Review makeReview(ResultSet resultSet, int i) throws SQLException {
         if (resultSet.getRow() == 0) {
             log.debug("Невозможно сформировать объект класса из пустой строки");
-            throw new DataNotFoundException("В storage не содержится отзыв");
+            throw new ObjectNotFoundException("В storage не содержится отзыв");
         }
         return Review.builder()
                 .reviewId(resultSet.getInt("review_id"))
