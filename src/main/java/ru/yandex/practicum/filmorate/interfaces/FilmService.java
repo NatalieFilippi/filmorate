@@ -52,5 +52,5 @@ public interface FilmService {
 
     void deleteDirector(int directorId);
 
-    Optional<List<Film>> findCommonFilms(long userId, long friendId) throws ObjectNotFoundException;
+    List <Film> findCommonFilms(long userId, long friendId) throws ObjectNotFoundException;
 }

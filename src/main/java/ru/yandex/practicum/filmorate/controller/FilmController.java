@@ -86,8 +86,8 @@ public class FilmController {
     }
 
     @GetMapping("/common")
-    public Optional<List<Film>> findCommonFilms(@RequestParam long userId, @RequestParam long friendId) throws ObjectNotFoundException {
-        return filmService.findCommonFilms(userId, friendId); //userService.getCommonFriends(id, otherId);
+    public List <Film> findCommonFilms(@RequestParam long userId, @RequestParam long friendId) throws ObjectNotFoundException {
+        return filmService.findCommonFilms(userId, friendId);
     }
 
 
