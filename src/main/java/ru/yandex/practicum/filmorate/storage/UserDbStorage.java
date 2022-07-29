@@ -1,24 +1,21 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
-import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.interfaces.FeedStorage;
 import ru.yandex.practicum.filmorate.interfaces.UserStorage;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 
-import javax.validation.Valid;
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,6 +24,7 @@ import java.util.List;
 @Slf4j
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
+
 
     @Autowired
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
@@ -108,14 +106,13 @@ public class UserDbStorage implements UserStorage {
         jdbcTemplate.update(sqlQuery);
     }
 
-    public User delete(User user) throws ObjectNotFoundException {
+    public void delete(long id) throws ObjectNotFoundException {
         String sqlQuery = "delete from USERS where USER_ID = ?";
-        if (jdbcTemplate.update(sqlQuery, user.getId()) > 0) {
-            return user;
-        } else {
-            log.debug(String.format("Пользователь %d не найден.", user.getId()));
+        if (jdbcTemplate.update(sqlQuery, id) == 0) {
+            log.debug(String.format("Пользователь %d не найден.", id));
             throw new ObjectNotFoundException("Пользователь не найден!");
         }
+        log.debug(String.format("Пользователь %d удалён из системы.", id));
     }
 
     public void addFriend(Long userId, Long friendId) {
@@ -157,5 +154,6 @@ public class UserDbStorage implements UserStorage {
         }
         return friends;
     }
+
 
 }

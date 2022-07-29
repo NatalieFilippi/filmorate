@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.interfaces.FeedService;
 import ru.yandex.practicum.filmorate.interfaces.UserService;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
@@ -15,10 +17,12 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final FeedService feedService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, FeedService feedService) {
         this.userService = userService;
+        this.feedService = feedService;
     }
 
     @GetMapping
@@ -41,6 +45,11 @@ public class UserController {
         return userService.put(user);
     }
 
+    @DeleteMapping("/{userId}")
+    public void deleteUser(@PathVariable("userId") long userId) throws ObjectNotFoundException {
+        userService.delete(userId);
+    }
+
     @PutMapping("/{id}/friends/{friendId}")
     public User addFriend(@PathVariable("id") long id, @PathVariable("friendId") long friendId) throws ObjectNotFoundException {
         return userService.addFriend(id, friendId);
@@ -59,6 +68,11 @@ public class UserController {
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable("id") long id, @PathVariable("otherId") long otherId) throws ObjectNotFoundException {
         return userService.getCommonFriends(id, otherId);
+    }
+
+    @GetMapping("/{id}/feed")
+    public List<Event> getFeed(@PathVariable("id") long id) throws ObjectNotFoundException {
+        return feedService.getFeed(id);
     }
 
     //метод для тестов

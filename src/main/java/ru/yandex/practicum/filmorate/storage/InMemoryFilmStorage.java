@@ -18,6 +18,7 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
@@ -64,9 +65,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film delete(@Valid @RequestBody Film film) {
-        log.debug("Удалён фильм: {}", film.toString());
-        return films.remove(film.getId());
+    public void delete(long id) {
+        log.debug("Удалён фильм: {}", id);
+        films.remove(id);
     }
 
     @Override
@@ -80,8 +81,13 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopularFilms(int count) {
-        return null;
+    public List<Film> getPopularFilms(int count, Map<String, String> params) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<Film> search(String query, List<String> searchOptions) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -104,6 +110,15 @@ public class InMemoryFilmStorage implements FilmStorage {
         return null;
     }
 
+    @Override
+    public List<Film> findFilmsOfDirectorSortByYear(int directorId) {
+        return null;
+    }
+
+    @Override
+    public List<Film> findFilmsOfDirectorSortByLikes(int directorId) {
+        return null;
+    }
 
     //ДОПОЛНИТЕЛЬНЫЕ МЕТОДЫ
     private String check(Film film) throws ValidationException {
@@ -124,5 +139,11 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     private long getNextId() {
         return ++lastFilmId;
+    }
+
+
+    @Override
+    public List<Film> getUserFilms(long userId) {
+        return null;
     }
 }
