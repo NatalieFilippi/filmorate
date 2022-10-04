@@ -15,7 +15,7 @@ import ru.yandex.practicum.filmorate.service.UserServiceImpl;
 import ru.yandex.practicum.filmorate.storage.FeedDbStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.storage.dao.DirectorDao;
+import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -29,7 +29,7 @@ public class FilmTest {
     private FilmController filmController = new FilmController(
             new FilmServiceImpl(new InMemoryFilmStorage(),
                     new InMemoryUserStorage(),
-                    new DirectorDao(new JdbcTemplate()),
+                    new DirectorStorage(new JdbcTemplate()),
                     new FeedDbStorage(new JdbcTemplate())));
     private UserController userController = new UserController(
             new UserServiceImpl(new InMemoryFilmStorage(),

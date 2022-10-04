@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.interfaces.FilmStorage;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.dao.DirectorDao;
 
 import java.sql.Date;
 import java.sql.*;
@@ -25,11 +24,11 @@ import java.util.stream.Collectors;
 public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
-    private final DirectorDao directorDao;
+    private final DirectorStorage directorStorage;
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, DirectorDao directorDao) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, DirectorStorage directorStorage) {
         this.jdbcTemplate = jdbcTemplate;
-        this.directorDao = directorDao;
+        this.directorStorage = directorStorage;
     }
 
     @Override
@@ -95,7 +94,7 @@ public class FilmDbStorage implements FilmStorage {
 
         //Обновить таблицу с жанрами
         setGenresByFilmId(film.getId(), film.getGenres());
-        directorDao.addFilm(film);
+        directorStorage.addFilm(film);
         return film;
     }
 
@@ -124,7 +123,7 @@ public class FilmDbStorage implements FilmStorage {
 
         setGenresByFilmId(film.getId(), film.getGenres());
         film.setGenres(getGenresByFilmId(film.getId()));
-        directorDao.updateFilm(film);
+        directorStorage.updateFilm(film);
 
         if (row == 1) {
             Film updFilm = findById(film.getId());
@@ -335,7 +334,7 @@ public class FilmDbStorage implements FilmStorage {
                 .description(rs.getString("DESCRIPTION"))
                 .releaseDate(rs.getDate("RELEASE_DATE").toLocalDate())
                 .duration(rs.getInt("DURATION"))
-                .directors(new HashSet<>(directorDao.findFilm(rs.getLong("FILM_ID"))))
+                .directors(new HashSet<>(directorStorage.findFilm(rs.getLong("FILM_ID"))))
                 .mpa(new Mpa(rs.getInt("MPA_ID"), rs.getString("MPA_NAME")))
                 .genres(getGenresByFilmId(rs.getLong("FILM_ID")))
                 .build();

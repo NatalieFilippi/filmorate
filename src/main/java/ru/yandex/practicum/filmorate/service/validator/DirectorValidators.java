@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.service.validator;
 import org.slf4j.Logger;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.storage.dao.DirectorDao;
+import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 
 public class DirectorValidators {
 
@@ -17,7 +17,7 @@ public class DirectorValidators {
         return message;
     }
 
-    public static void isDirectorExists(DirectorDao storage, Integer directorId,
+    public static void isDirectorExists(DirectorStorage storage, Integer directorId,
                                         String message, Logger log) throws ObjectNotFoundException {
         if (storage.find(directorId) == null) {
             log.warn(message);

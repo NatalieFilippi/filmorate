@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.dao;
+package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,11 +14,11 @@ import java.sql.SQLException;
 import java.util.*;
 
 @Repository
-public class DirectorDao {
+public class DirectorStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public DirectorDao(JdbcTemplate jdbcTemplate) {this.jdbcTemplate = jdbcTemplate;}
+    public DirectorStorage(JdbcTemplate jdbcTemplate) {this.jdbcTemplate = jdbcTemplate;}
 
     public Director find(int id) {
         try {
